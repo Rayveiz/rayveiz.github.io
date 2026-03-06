@@ -242,11 +242,8 @@ const EmployeeCard = () => {
                 <Progress value={Math.min(emp.progressPercent, 100)} className="h-3" />
               </div>
             </div>
-          </div>
 
-          {/* Development Plan */}
-          <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-            <h2 className="text-lg font-semibold text-foreground mb-4">План развития</h2>
+            <h3 className="text-sm font-semibold text-foreground mt-5 mb-2">План развития</h3>
             <div className="rounded-xl border border-border overflow-hidden">
               <Table>
                 <TableHeader>
