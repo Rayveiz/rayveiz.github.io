@@ -78,10 +78,18 @@ const initMatrix = (): MatrixData => {
   return m;
 };
 
-const cellColor = (val: number) => {
-  if (val === 0) return "text-muted-foreground";
-  if (val >= 3) return "text-primary font-bold";
-  return "text-chart-2 font-semibold";
+const cellColor = (val: number, max: number) => {
+  if (val === 0) return "text-red-500 bg-red-50";
+  if (max === 3) {
+    if (val === 1) return "text-orange-600 bg-orange-50";
+    if (val === 2) return "text-yellow-600 bg-yellow-50";
+    return "text-emerald-600 bg-emerald-50 font-bold";
+  }
+  // max === 4
+  if (val === 1) return "text-orange-600 bg-orange-50";
+  if (val === 2) return "text-yellow-600 bg-yellow-50";
+  if (val === 3) return "text-lime-600 bg-lime-50 font-semibold";
+  return "text-emerald-600 bg-emerald-50 font-bold";
 };
 
 const Competences = () => {
@@ -202,7 +210,7 @@ const Competences = () => {
                           max={activeTab === "config" ? 3 : 4}
                           value={matrix[emp.id]?.[s] ?? 0}
                           onChange={e => handleChange(emp.id, s, e.target.value)}
-                          className={`w-10 h-8 text-center text-sm rounded-md border border-transparent bg-transparent hover:border-border hover:bg-background/60 focus:border-primary focus:bg-background/80 outline-none transition-all ${cellColor(matrix[emp.id]?.[s] ?? 0)}`}
+                          className={`w-10 h-8 text-center text-sm rounded-md border border-transparent hover:border-border focus:border-primary outline-none transition-all ${cellColor(matrix[emp.id]?.[s] ?? 0, activeTab === "config" ? 3 : 4)}`}
                         />
                       </TableCell>
                     ))}
