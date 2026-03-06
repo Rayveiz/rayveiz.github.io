@@ -231,19 +231,39 @@ const EmployeeCard = () => {
           <div className="flex flex-col gap-4">
             {/* Output */}
             <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-              <h2 className="text-lg font-semibold text-foreground mb-4">Выработка</h2>
-              <div className="space-y-3 text-sm">
-                <p className="text-muted-foreground">За 90 дней: <span className="text-foreground font-bold text-lg">{emp.total90d.toFixed(1)} ч</span></p>
-                <p className="text-muted-foreground">Средняя выработка: <span className="text-foreground font-medium">{emp.avgMonthly.toFixed(1)} ч/мес</span> <span className="text-xs">(минимум: {emp.needMonthly.toFixed(1)})</span></p>
-                <p className="text-muted-foreground">План 3 месяца: <span className="text-foreground font-medium">{emp.planHours3m.toFixed(1)} ч</span></p>
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-muted-foreground text-xs">Прогресс</span>
-                    <span className={`text-sm font-bold ${emp.progressPercent >= 100 ? "text-emerald-600" : emp.progressPercent >= 80 ? "text-foreground" : "text-red-500"}`}>{emp.progressPercent}%</span>
-                  </div>
-                  <Progress value={Math.min(emp.progressPercent, 100)} className="h-3" />
-                </div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-foreground">Выработка</h2>
+                <Select value={outputPeriod} onValueChange={setOutputPeriod}>
+                  <SelectTrigger className="w-44 h-8 text-xs bg-background/70"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {periodOptions.map(p => (
+                      <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
+              {(() => {
+                const period = periodOptions.find(p => p.value === outputPeriod)!;
+                const factor = period.days / 90;
+                const totalHours = +(emp.total90d * factor).toFixed(1);
+                const avgMonthly = +(totalHours / (period.days / 30)).toFixed(1);
+                const planHours = +(emp.planHours3m * factor).toFixed(1);
+                const progress = Math.round((totalHours / planHours) * 100);
+                return (
+                  <div className="space-y-3 text-sm">
+                    <p className="text-muted-foreground">За {period.days} дней: <span className="text-foreground font-bold text-lg">{totalHours} ч</span></p>
+                    <p className="text-muted-foreground">Средняя выработка: <span className="text-foreground font-medium">{avgMonthly} ч/мес</span> <span className="text-xs">(минимум: {emp.needMonthly.toFixed(1)})</span></p>
+                    <p className="text-muted-foreground">План ({period.label.toLowerCase()}): <span className="text-foreground font-medium">{planHours} ч</span></p>
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-muted-foreground text-xs">Прогресс</span>
+                        <span className={`text-sm font-bold ${progress >= 100 ? "text-emerald-600" : progress >= 80 ? "text-foreground" : "text-red-500"}`}>{progress}%</span>
+                      </div>
+                      <Progress value={Math.min(progress, 100)} className="h-3" />
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Development Plan */}

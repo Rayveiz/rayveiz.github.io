@@ -18,23 +18,25 @@ interface Employee {
   name: string;
   position: string;
   status: string;
+  closedHours: number;
+  normHours: number;
 }
 
 const initialEmployees: Employee[] = [
-  { id: 2733, name: "Алексашкин Святослав Сергеевич", position: "Младший консультант по информационным технологиям", status: "1" },
-  { id: 2379, name: "Болтнев Станислав Александрович", position: "Ведущий консультант по информационным технологиям", status: "3" },
-  { id: 2721, name: "Ефремов Алексей Владимирович", position: "Ведущий консультант по информационным технологиям", status: "3" },
-  { id: 2365, name: "Казаков Антон Вячеславович", position: "Аналитик", status: "1" },
-  { id: 2713, name: "Лунев Никита", position: "Младший консультант по информационным технологиям", status: "2" },
-  { id: 2705, name: "Петянов Леонид Станиславович", position: "Младший консультант по информационным технологиям", status: "2" },
-  { id: 2473, name: "Пронина Ирина Михайловна", position: "Консультант по информационным технологиям", status: "1" },
-  { id: 1973, name: "Пучков Олег Анатольевич", position: "Ведущий консультант по информационным технологиям", status: "3" },
-  { id: 2691, name: "Садкова Виктория Александровна", position: "Младший консультант по информационным технологиям", status: "1" },
-  { id: 2175, name: "Сокотун Ирина Олеговна", position: "Ведущий консультант по информационным технологиям", status: "2" },
-  { id: 2585, name: "Хисматова Алина Руслановна", position: "Консультант по информационным технологиям", status: "2" },
-  { id: 2325, name: "Шмырина Анастасия Анатольевна", position: "", status: "3" },
-  { id: 2819, name: "Ярков Константин Владимирович", position: "", status: "3" },
-  { id: 2835, name: "Ярышев Владимир Сергеевич", position: "", status: "1" },
+  { id: 2733, name: "Алексашкин Святослав Сергеевич", position: "Младший консультант по информационным технологиям", status: "1", closedHours: 104.2, normHours: 120 },
+  { id: 2379, name: "Болтнев Станислав Александрович", position: "Ведущий консультант по информационным технологиям", status: "3", closedHours: 161.7, normHours: 140 },
+  { id: 2721, name: "Ефремов Алексей Владимирович", position: "Ведущий консультант по информационным технологиям", status: "3", closedHours: 136.8, normHours: 140 },
+  { id: 2365, name: "Казаков Антон Вячеславович", position: "Аналитик", status: "1", closedHours: 98.3, normHours: 120 },
+  { id: 2713, name: "Лунев Никита", position: "Младший консультант по информационным технологиям", status: "2", closedHours: 93.3, normHours: 120 },
+  { id: 2705, name: "Петянов Леонид Станиславович", position: "Младший консультант по информационным технологиям", status: "2", closedHours: 101.7, normHours: 120 },
+  { id: 2473, name: "Пронина Ирина Михайловна", position: "Консультант по информационным технологиям", status: "1", closedHours: 116.7, normHours: 120 },
+  { id: 1973, name: "Пучков Олег Анатольевич", position: "Ведущий консультант по информационным технологиям", status: "3", closedHours: 173.3, normHours: 140 },
+  { id: 2691, name: "Садкова Виктория Александровна", position: "Младший консультант по информационным технологиям", status: "1", closedHours: 86.7, normHours: 120 },
+  { id: 2175, name: "Сокотун Ирина Олеговна", position: "Ведущий консультант по информационным технологиям", status: "2", closedHours: 130.0, normHours: 140 },
+  { id: 2585, name: "Хисматова Алина Руслановна", position: "Консультант по информационным технологиям", status: "2", closedHours: 110.0, normHours: 120 },
+  { id: 2325, name: "Шмырина Анастасия Анатольевна", position: "", status: "3", closedHours: 123.3, normHours: 120 },
+  { id: 2819, name: "Ярков Константин Владимирович", position: "", status: "3", closedHours: 115.0, normHours: 120 },
+  { id: 2835, name: "Ярышев Владимир Сергеевич", position: "", status: "1", closedHours: 150.0, normHours: 140 },
 ];
 
 const statusLabels: Record<string, string> = {
@@ -67,6 +69,8 @@ const Employees = () => {
       name: newName || "Новый сотрудник",
       position: newPosition,
       status: "1",
+      closedHours: 0,
+      normHours: 120,
     };
     setEmployees([...employees, newEmp]);
     setNewBitrixId("");
@@ -185,6 +189,7 @@ const Employees = () => {
                   <TableHead className="font-bold text-foreground">Имя</TableHead>
                   <TableHead className="font-bold text-foreground">Должность</TableHead>
                   <TableHead className="font-bold text-foreground w-44">Статус</TableHead>
+                  <TableHead className="font-bold text-foreground w-32 text-center">Часы / Норма</TableHead>
                   <TableHead className="font-bold text-foreground text-right">Действия</TableHead>
                 </TableRow>
               </TableHeader>
@@ -209,6 +214,12 @@ const Employees = () => {
                           <SelectItem value="3">3 (Завал)</SelectItem>
                         </SelectContent>
                       </Select>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className={`text-sm font-medium ${emp.closedHours >= emp.normHours ? "text-emerald-600" : emp.closedHours >= emp.normHours * 0.8 ? "text-foreground" : "text-red-500"}`}>
+                        {emp.closedHours.toFixed(1)}
+                      </span>
+                      <span className="text-muted-foreground text-xs"> / {emp.normHours}</span>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end gap-1.5">
