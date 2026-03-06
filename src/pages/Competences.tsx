@@ -78,10 +78,18 @@ const initMatrix = (): MatrixData => {
   return m;
 };
 
-const cellColor = (val: number) => {
-  if (val === 0) return "text-muted-foreground";
-  if (val >= 3) return "text-primary font-bold";
-  return "text-chart-2 font-semibold";
+const cellColor = (val: number, max: number) => {
+  if (val === 0) return "text-red-500 bg-red-50";
+  if (max === 3) {
+    if (val === 1) return "text-orange-600 bg-orange-50";
+    if (val === 2) return "text-yellow-600 bg-yellow-50";
+    return "text-emerald-600 bg-emerald-50 font-bold";
+  }
+  // max === 4
+  if (val === 1) return "text-orange-600 bg-orange-50";
+  if (val === 2) return "text-yellow-600 bg-yellow-50";
+  if (val === 3) return "text-lime-600 bg-lime-50 font-semibold";
+  return "text-emerald-600 bg-emerald-50 font-bold";
 };
 
 const Competences = () => {
