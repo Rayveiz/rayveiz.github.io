@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Moon, Sun } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 const navItems = [
@@ -15,6 +15,17 @@ const navItems = [
 const Navbar = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [dark, setDark] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("theme") === "dark";
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+    localStorage.setItem("theme", dark ? "dark" : "light");
+  }, [dark]);
 
   return (
     <nav className="bg-card/80 backdrop-blur-md border border-border rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 mb-4 sm:mb-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
@@ -24,7 +35,7 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden lg:flex gap-1.5">
+        <div className="hidden lg:flex items-center gap-1.5">
           {navItems.map((item) => (
             <Link
               key={item.path}
@@ -38,16 +49,32 @@ const Navbar = () => {
               {item.label}
             </Link>
           ))}
+          <button
+            onClick={() => setDark(!dark)}
+            className="ml-2 p-2 rounded-xl bg-secondary/70 text-secondary-foreground hover:bg-accent transition-all duration-300"
+            aria-label="Переключить тему"
+          >
+            {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
         </div>
 
-        {/* Mobile burger */}
-        <button
-          className="lg:hidden p-2 rounded-xl bg-secondary/70 text-secondary-foreground hover:bg-accent transition-colors"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Меню"
-        >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        {/* Mobile buttons */}
+        <div className="flex lg:hidden items-center gap-1.5">
+          <button
+            onClick={() => setDark(!dark)}
+            className="p-2 rounded-xl bg-secondary/70 text-secondary-foreground hover:bg-accent transition-colors"
+            aria-label="Переключить тему"
+          >
+            {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
+          <button
+            className="p-2 rounded-xl bg-secondary/70 text-secondary-foreground hover:bg-accent transition-colors"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Меню"
+          >
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
