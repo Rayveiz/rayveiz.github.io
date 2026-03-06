@@ -109,17 +109,34 @@ const Admins = () => {
     u.id.toString().includes(searchQuery)
   );
 
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  };
+
   return (
     <div className="min-h-screen relative">
       <AnimatedBackground />
-      <div className="relative z-10 max-w-[1200px] mx-auto px-6 py-6">
+      <div className="relative z-10 max-w-[1200px] mx-auto px-3 sm:px-6 py-4 sm:py-6">
         <Navbar />
 
         {/* Superadmin */}
-        <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-6 mb-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Управление админами</h1>
-          <h2 className="text-lg font-semibold text-foreground mb-3">Superadmin (.env)</h2>
-          <div className="rounded-xl border border-border overflow-hidden">
+        <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-4">Управление админами</h1>
+          <h2 className="text-base sm:text-lg font-semibold text-foreground mb-3">Superadmin (.env)</h2>
+
+          {/* Mobile cards */}
+          <div className="sm:hidden space-y-2">
+            {superadmins.map(sa => (
+              <div key={sa.id} className="bg-background/60 border border-border rounded-xl p-3 flex items-center justify-between">
+                <span className="font-medium text-foreground text-sm">{sa.name}</span>
+                <span className="font-mono text-muted-foreground text-xs">ID: {sa.id}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop table */}
+          <div className="hidden sm:block rounded-xl border border-border overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50 hover:bg-muted/50">
@@ -140,9 +157,26 @@ const Admins = () => {
         </div>
 
         {/* Current admins */}
-        <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-6 mb-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-          <h2 className="text-lg font-semibold text-foreground mb-3">Текущие админы</h2>
-          <div className="rounded-xl border border-border overflow-hidden">
+        <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+          <h2 className="text-base sm:text-lg font-semibold text-foreground mb-3">Текущие админы</h2>
+
+          {/* Mobile cards */}
+          <div className="sm:hidden space-y-2">
+            {admins.length === 0 ? (
+              <p className="text-center text-muted-foreground py-6 text-sm">Нет админов</p>
+            ) : (
+              admins.map(a => (
+                <div key={a.id} className="bg-background/60 border border-border rounded-xl p-3 space-y-1">
+                  <p className="font-medium text-foreground text-sm">{a.name}</p>
+                  <p className="text-xs text-muted-foreground">ID: {a.id} · Добавлен: {formatDate(a.addedAt)}</p>
+                  <p className="text-xs text-muted-foreground">Кем: {a.addedBy}</p>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Desktop table */}
+          <div className="hidden sm:block rounded-xl border border-border overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50 hover:bg-muted/50">
@@ -163,7 +197,7 @@ const Admins = () => {
                     <TableRow key={a.id}>
                       <TableCell className="font-mono text-muted-foreground">{a.id}</TableCell>
                       <TableCell className="font-medium text-foreground">{a.name}</TableCell>
-                      <TableCell className="text-muted-foreground text-sm">{a.addedAt}</TableCell>
+                      <TableCell className="text-muted-foreground text-sm">{formatDate(a.addedAt)}</TableCell>
                       <TableCell className="font-mono text-muted-foreground">{a.addedBy}</TableCell>
                       <TableCell className="text-right">
                         <span className="text-muted-foreground">-</span>
@@ -177,25 +211,41 @@ const Admins = () => {
         </div>
 
         {/* Add admin + Bitrix users */}
-        <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-          <h2 className="text-lg font-semibold text-foreground mb-1">Добавить админа</h2>
+        <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+          <h2 className="text-base sm:text-lg font-semibold text-foreground mb-1">Добавить админа</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Только superadmin из <span className="font-mono font-bold text-foreground">.env</span> может добавлять/удалять админов.
           </p>
 
-          <h3 className="text-base font-semibold text-foreground mb-3">Активные пользователи Bitrix</h3>
+          <h3 className="text-sm sm:text-base font-semibold text-foreground mb-3">Активные пользователи Bitrix</h3>
 
-          <div className="relative w-64 mb-4">
+          <div className="relative w-full sm:w-64 mb-4">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Поиск..."
-              className="pl-9 bg-background/70"
-            />
+            <Input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Поиск..." className="pl-9 bg-background/70" />
           </div>
 
-          <div className="rounded-xl border border-border overflow-hidden max-h-[500px] overflow-y-auto">
+          {/* Mobile list */}
+          <div className="sm:hidden max-h-[400px] overflow-y-auto scrollbar-thin space-y-1.5">
+            {filteredUsers.map(u => (
+              <div key={`${u.id}-${u.name}`} className="bg-background/60 border border-border rounded-xl p-3 flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-sm text-foreground truncate">{u.name}</p>
+                  <p className="text-xs text-muted-foreground font-mono">ID: {u.id}</p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 text-xs text-muted-foreground hover:text-primary shrink-0"
+                  onClick={() => handleAddAdmin(u.id, u.name)}
+                >
+                  +
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop table */}
+          <div className="hidden sm:block rounded-xl border border-border overflow-hidden max-h-[500px] overflow-y-auto scrollbar-thin">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50 hover:bg-muted/50 sticky top-0 z-10">
