@@ -50,7 +50,7 @@ const DepartmentChart = () => {
   const [activePeriod, setActivePeriod] = useState<string>("2weeks");
 
   const selectedPeriod = periods.find((p) => p.key === activePeriod)!;
-  const data = useMemo(() => generateData(selectedPeriod.days), [activePeriod]);
+  const data = useMemo(() => generateData(selectedPeriod.days), [selectedPeriod.days]);
 
   const avgHours = Math.round(data.reduce((s, d) => s + d.hours, 0) / data.length);
   const maxHours = Math.max(...data.map((d) => d.hours));
