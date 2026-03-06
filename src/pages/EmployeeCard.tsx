@@ -174,23 +174,41 @@ const EmployeeCard = () => {
               <p className="text-muted-foreground">Грейд (эвристика): <span className="text-foreground font-medium">{emp.grade}</span></p>
             </div>
 
-            <h3 className="text-sm font-semibold text-foreground mt-5 mb-2">Фото</h3>
-            {emp.photoUrl ? (
-              <img src={emp.photoUrl} alt="Фото" className="w-48 h-48 object-cover rounded-xl border border-border mb-3" />
-            ) : (
-              <div className="w-48 h-48 rounded-xl border border-border bg-muted/50 flex items-center justify-center mb-3">
-                <User className="w-16 h-16 text-muted-foreground/30" />
+            <div className="flex flex-col sm:flex-row gap-4 mt-4">
+              {/* Фото сотрудника */}
+              <div className="flex flex-col items-center">
+                <h3 className="text-sm font-semibold text-foreground mb-2">Фото</h3>
+                {emp.photoUrl ? (
+                  <img src={emp.photoUrl} alt="Фото" className="w-36 h-36 object-cover rounded-xl border border-border mb-2" />
+                ) : (
+                  <div className="w-36 h-36 rounded-xl border border-border bg-muted/50 flex items-center justify-center mb-2">
+                    <User className="w-12 h-12 text-muted-foreground/30" />
+                  </div>
+                )}
+                <p className="text-[11px] text-muted-foreground text-center mb-2">
+                  {emp.photoUrl ? "Фото загружено" : "Фото отсутствует"}
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <Input type="file" accept=".jpg,.jpeg,.png,.webp" className="w-36 bg-background/70 text-xs" />
+                  <Button size="sm" className="gap-1 shrink-0 text-xs px-2">
+                    <Upload className="w-3 h-3" />
+                    Загрузить
+                  </Button>
+                </div>
               </div>
-            )}
-            <p className="text-xs text-muted-foreground mb-2">
-              {emp.photoUrl ? "Фото загружено" : "Фото отсутствует. Для карточки требуется фото."}
-            </p>
-            <div className="flex items-center gap-2">
-              <Input type="file" accept=".jpg,.jpeg,.png,.webp" className="w-full sm:w-56 bg-background/70 text-xs" />
-              <Button size="sm" className="gap-1 shrink-0">
-                <Upload className="w-3.5 h-3.5" />
-                Загрузить
-              </Button>
+
+              {/* Тип сотрудника */}
+              <div className="flex flex-col items-center">
+                <h3 className="text-sm font-semibold text-foreground mb-2 text-center leading-tight">Актуальный тип сотрудника<br /><span className="text-[11px] font-normal text-muted-foreground">по результатам последнего опроса</span></h3>
+                <div className="w-36 h-36 rounded-xl border border-dashed border-border bg-muted/30 flex items-center justify-center mb-2">
+                  <User className="w-12 h-12 text-muted-foreground/20" />
+                </div>
+                <textarea
+                  placeholder="Описание типа сотрудника..."
+                  rows={3}
+                  className="w-full max-w-[220px] text-xs rounded-lg border border-border bg-background/70 px-2.5 py-1.5 text-foreground placeholder:text-muted-foreground/60 resize-none focus:outline-none focus:ring-1 focus:ring-primary/40"
+                />
+              </div>
             </div>
           </div>
 
