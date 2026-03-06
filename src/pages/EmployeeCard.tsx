@@ -88,16 +88,16 @@ const crmSkills = [
 ];
 
 const cellColor = (val: number, max: number) => {
-  if (val === 0) return "text-red-500 bg-red-50";
+  if (val === 0) return "text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-950/40";
   if (max === 3) {
-    if (val === 1) return "text-orange-600 bg-orange-50";
-    if (val === 2) return "text-yellow-600 bg-yellow-50";
-    return "text-emerald-600 bg-emerald-50 font-bold";
+    if (val === 1) return "text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/40";
+    if (val === 2) return "text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-950/40";
+    return "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 font-bold";
   }
-  if (val === 1) return "text-orange-600 bg-orange-50";
-  if (val === 2) return "text-yellow-600 bg-yellow-50";
-  if (val === 3) return "text-lime-600 bg-lime-50 font-semibold";
-  return "text-emerald-600 bg-emerald-50 font-bold";
+  if (val === 1) return "text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/40";
+  if (val === 2) return "text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-950/40";
+  if (val === 3) return "text-lime-600 dark:text-lime-400 bg-lime-50 dark:bg-lime-950/40 font-semibold";
+  return "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 font-bold";
 };
 const EmployeeCard = () => {
   const { id } = useParams<{ id: string }>();
