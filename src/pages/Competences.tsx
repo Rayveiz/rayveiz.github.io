@@ -210,7 +210,7 @@ const Competences = () => {
                           max={activeTab === "config" ? 3 : 4}
                           value={matrix[emp.id]?.[s] ?? 0}
                           onChange={e => handleChange(emp.id, s, e.target.value)}
-                          className={`w-10 h-8 text-center text-sm rounded-md border border-transparent bg-transparent hover:border-border hover:bg-background/60 focus:border-primary focus:bg-background/80 outline-none transition-all ${cellColor(matrix[emp.id]?.[s] ?? 0)}`}
+                          className={`w-10 h-8 text-center text-sm rounded-md border border-transparent hover:border-border focus:border-primary outline-none transition-all ${cellColor(matrix[emp.id]?.[s] ?? 0, activeTab === "config" ? 3 : 4)}`}
                         />
                       </TableCell>
                     ))}
