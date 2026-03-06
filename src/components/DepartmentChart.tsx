@@ -98,6 +98,7 @@ const DepartmentChart = () => {
             angle={isMobile ? -45 : 0}
             textAnchor={isMobile ? "end" : "middle"}
             height={isMobile ? 50 : 30}
+          />
           <YAxis
             tick={{ fontSize: 10, fill: "hsl(220, 10%, 42%)" }}
             axisLine={false}
