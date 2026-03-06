@@ -15,12 +15,17 @@ const periods = [
 const generateData = (days: number) => {
   const data = [];
   const now = new Date();
+  // Use a simple seed based on the day to avoid re-randomizing on every render
+  const seed = now.getFullYear() * 1000 + now.getMonth() * 31 + now.getDate();
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(now);
     date.setDate(date.getDate() - i);
+    // Deterministic pseudo-random based on seed + index
+    const pseudo = ((seed + i * 137 + 97) * 2654435761) >>> 0;
+    const hours = (pseudo % 35) + 20;
     data.push({
       date: `${date.getDate().toString().padStart(2, "0")}.${(date.getMonth() + 1).toString().padStart(2, "0")}`,
-      hours: Math.floor(Math.random() * 35 + 20),
+      hours,
     });
   }
   return data;
