@@ -12,6 +12,10 @@ const AnimatedBackground = () => {
     let animationId: number;
     let mouse = { x: -1000, y: -1000 };
 
+    const isMobile = window.innerWidth < 768;
+    const particleCount = isMobile ? 30 : 80;
+    const connectionDist = isMobile ? 100 : 160;
+
     const particles: {
       x: number; y: number; vx: number; vy: number;
       r: number; opacity: number; baseOpacity: number;
@@ -29,14 +33,14 @@ const AnimatedBackground = () => {
     };
     window.addEventListener("mousemove", handleMouse);
 
-    for (let i = 0; i < 80; i++) {
+    for (let i = 0; i < particleCount; i++) {
       const baseOpacity = Math.random() * 0.25 + 0.08;
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        r: Math.random() * 4 + 1.5,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: Math.random() * 3.5 + 1.5,
         opacity: baseOpacity,
         baseOpacity,
       });
@@ -44,19 +48,18 @@ const AnimatedBackground = () => {
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
       const time = Date.now() * 0.0003;
 
       // Large floating gradient orbs
       const orbs = [
-        { cx: 0.25, cy: 0.3, sx: 1, sy: 0.7, radius: 400, color: "170, 75%, 26%", alpha: 0.07 },
-        { cx: 0.75, cy: 0.6, sx: 0.8, sy: 0.5, radius: 350, color: "199, 70%, 50%", alpha: 0.06 },
-        { cx: 0.5, cy: 0.8, sx: 0.6, sy: 0.9, radius: 300, color: "170, 60%, 35%", alpha: 0.05 },
+        { cx: 0.25, cy: 0.3, sx: 1, sy: 0.7, radius: isMobile ? 200 : 400, color: "170, 75%, 26%", alpha: 0.07 },
+        { cx: 0.75, cy: 0.6, sx: 0.8, sy: 0.5, radius: isMobile ? 180 : 350, color: "199, 70%, 50%", alpha: 0.06 },
+        { cx: 0.5, cy: 0.8, sx: 0.6, sy: 0.9, radius: isMobile ? 150 : 300, color: "170, 60%, 35%", alpha: 0.05 },
       ];
 
       orbs.forEach((orb) => {
-        const x = canvas.width * orb.cx + Math.sin(time * orb.sx) * 150;
-        const y = canvas.height * orb.cy + Math.cos(time * orb.sy) * 120;
+        const x = canvas.width * orb.cx + Math.sin(time * orb.sx) * (isMobile ? 60 : 150);
+        const y = canvas.height * orb.cy + Math.cos(time * orb.sy) * (isMobile ? 50 : 120);
         const grad = ctx.createRadialGradient(x, y, 0, x, y, orb.radius);
         grad.addColorStop(0, `hsla(${orb.color}, ${orb.alpha})`);
         grad.addColorStop(0.6, `hsla(${orb.color}, ${orb.alpha * 0.4})`);
@@ -77,14 +80,13 @@ const AnimatedBackground = () => {
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < 250) {
           p.opacity = p.baseOpacity + (0.5 * (1 - dist / 250));
-          // Push particles away from cursor slightly
           p.x += dx * 0.008;
           p.y += dy * 0.008;
         } else {
           p.opacity += (p.baseOpacity - p.opacity) * 0.03;
         }
 
-        // Glow effect
+        // Glow
         const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 3);
         glow.addColorStop(0, `hsla(170, 75%, 36%, ${p.opacity * 0.6})`);
         glow.addColorStop(1, `hsla(170, 75%, 36%, 0)`);
@@ -104,8 +106,8 @@ const AnimatedBackground = () => {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 160) {
-            const alpha = 0.15 * (1 - dist / 160);
+          if (dist < connectionDist) {
+            const alpha = 0.15 * (1 - dist / connectionDist);
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);

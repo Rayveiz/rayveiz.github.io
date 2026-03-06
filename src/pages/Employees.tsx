@@ -96,68 +96,87 @@ const Employees = () => {
   return (
     <div className="min-h-screen relative">
       <AnimatedBackground />
-      <div className="relative z-10 max-w-[1200px] mx-auto px-6 py-6">
+      <div className="relative z-10 max-w-[1200px] mx-auto px-3 sm:px-6 py-4 sm:py-6">
         <Navbar />
 
         {/* Add employee form */}
-        <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-6 mb-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-          <h1 className="text-2xl font-bold text-foreground mb-1">Сотрудники</h1>
-          <h2 className="text-lg font-semibold text-foreground mb-2">Добавить сотрудника</h2>
+        <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-1">Сотрудники</h1>
+          <h2 className="text-base sm:text-lg font-semibold text-foreground mb-2">Добавить сотрудника</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Можно указать только <span className="font-bold text-foreground">Bitrix ID</span> или только{" "}
             <span className="font-bold text-foreground">ФИО</span>: система попробует подтянуть второе из Bitrix.
           </p>
-          <div className="flex flex-wrap items-end gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-muted-foreground">Bitrix ID:</label>
-              <Input
-                value={newBitrixId}
-                onChange={(e) => setNewBitrixId(e.target.value)}
-                placeholder="ID"
-                className="w-40 bg-background/70"
-              />
+              <Input value={newBitrixId} onChange={(e) => setNewBitrixId(e.target.value)} placeholder="ID" className="bg-background/70" />
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-muted-foreground">ФИО:</label>
-              <Input
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                placeholder="Фамилия Имя Отчество"
-                className="w-56 bg-background/70"
-              />
+              <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Фамилия Имя Отчество" className="bg-background/70" />
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-muted-foreground">Должность:</label>
-              <Input
-                value={newPosition}
-                onChange={(e) => setNewPosition(e.target.value)}
-                placeholder="Должность"
-                className="w-56 bg-background/70"
-              />
+              <Input value={newPosition} onChange={(e) => setNewPosition(e.target.value)} placeholder="Должность" className="bg-background/70" />
             </div>
-            <Button onClick={handleAdd} className="gap-1.5 shadow-md">
-              <UserPlus className="w-4 h-4" />
-              Добавить
-            </Button>
+            <div className="flex items-end">
+              <Button onClick={handleAdd} className="gap-1.5 shadow-md w-full sm:w-auto">
+                <UserPlus className="w-4 h-4" />
+                Добавить
+              </Button>
+            </div>
           </div>
         </div>
 
         {/* Employee list */}
-        <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-          <div className="flex items-center justify-between mb-4">
+        <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
             <h2 className="text-lg font-bold text-foreground">Список</h2>
-            <div className="relative w-64">
+            <div className="relative w-full sm:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Поиск..."
-                className="pl-9 bg-background/70"
-              />
+              <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Поиск..." className="pl-9 bg-background/70" />
             </div>
           </div>
 
-          <div className="rounded-xl border border-border overflow-hidden">
+          {/* Mobile cards */}
+          <div className="md:hidden space-y-3">
+            {filtered.map((emp) => (
+              <div key={emp.id} className="bg-background/60 border border-border rounded-xl p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="font-medium text-foreground text-sm truncate">{emp.name}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">ID: {emp.id}</p>
+                    {emp.position && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{emp.position}</p>}
+                  </div>
+                  <span className={`shrink-0 text-xs font-medium px-2.5 py-1 rounded-lg border ${statusColors[emp.status]}`}>
+                    {statusLabels[emp.status]}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Select value={emp.status} onValueChange={(v) => handleStatusChange(emp.id, v)}>
+                    <SelectTrigger className="h-8 text-xs font-medium border rounded-lg flex-1">
+                      <SelectValue>{emp.status} ({statusLabels[emp.status]})</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 (Свободен)</SelectItem>
+                      <SelectItem value="2">2 (Занят)</SelectItem>
+                      <SelectItem value="3">3 (Завал)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button size="sm" onClick={() => handleSave(emp)} className="h-8 text-xs px-3">
+                    <Save className="w-3 h-3" />
+                  </Button>
+                  <Button size="sm" variant="destructive" onClick={() => handleDelete(emp.id)} className="h-8 text-xs px-3">
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop table */}
+          <div className="hidden md:block rounded-xl border border-border overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50 hover:bg-muted/50">
@@ -173,16 +192,10 @@ const Employees = () => {
                   <TableRow key={emp.id} className="group transition-colors duration-200">
                     <TableCell className="font-mono text-muted-foreground">{emp.id}</TableCell>
                     <TableCell>
-                      <Input
-                        defaultValue={emp.name}
-                        className="border-transparent bg-transparent hover:bg-background/60 hover:border-border transition-all h-8 text-sm"
-                      />
+                      <Input defaultValue={emp.name} className="border-transparent bg-transparent hover:bg-background/60 hover:border-border transition-all h-8 text-sm" />
                     </TableCell>
                     <TableCell>
-                      <Input
-                        defaultValue={emp.position}
-                        className="border-transparent bg-transparent hover:bg-background/60 hover:border-border transition-all h-8 text-sm"
-                      />
+                      <Input defaultValue={emp.position} className="border-transparent bg-transparent hover:bg-background/60 hover:border-border transition-all h-8 text-sm" />
                     </TableCell>
                     <TableCell>
                       <Select value={emp.status} onValueChange={(v) => handleStatusChange(emp.id, v)}>

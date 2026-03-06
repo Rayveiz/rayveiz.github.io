@@ -48,7 +48,6 @@ const initMatrix = (): MatrixData => {
     m[emp.id] = {};
     [...configSkills, ...crmSkills].forEach(s => { m[emp.id][s] = 0; });
   });
-  // Prefill config data from screenshot
   m[2733]["УНФ"]=1; m[2379]["ERP Опер. Учет"]=2; m[2379]["БП"]=3; m[2379]["УНФ"]=1;
   m[2721]["ERP Опер. Учет"]=3; m[2721]["ERP Бюджет"]=1; m[2721]["ДО"]=3; m[2721]["ТОиР"]=3; m[2721]["ИТИЛ"]=3;
   m[2365]["БП"]=3; m[2365]["УТ"]=3;
@@ -61,7 +60,6 @@ const initMatrix = (): MatrixData => {
   m[2585]["ERP Опер. Учет"]=1; m[2585]["ЗУП"]=2;
   m[2325]["ERP Опер. Учет"]=1; m[2325]["ERP Рег. Учет"]=2;
   m[2835]["УХ"]=3; m[2835]["УПП"]=3; m[2835]["ERP Опер. Учет"]=3; m[2835]["ERP Рег. Учет"]=3; m[2835]["ERP Бюджет"]=3; m[2835]["ЗУП"]=3; m[2835]["БП"]=3; m[2835]["УТ"]=3; m[2835]["УНФ"]=3; m[2835]["ДО"]=3; m[2835]["ТОиР"]=3; m[2835]["ИТИЛ"]=3;
-  // CRM data
   m[2733]["Документация и инструкции"]=2; m[2733]["Обновления"]=3; m[2733]["Обучение/ Передача знаний"]=2; m[2733]["Оценка/ЧТЗ/ Спецификации"]=2; m[2733]["Сбор требований/ предпроект"]=1; m[2733]["Сопровождение: прочие обращения"]=3; m[2733]["Тестирование"]=2;
   m[2379]["Документация и инструкции"]=3; m[2379]["Обновления"]=2; m[2379]["Обучение/ Передача знаний"]=3; m[2379]["Оценка/ЧТЗ/ Спецификации"]=4; m[2379]["Сбор требований/ предпроект"]=4; m[2379]["Сопровождение: прочие обращения"]=3; m[2379]["Тестирование"]=3;
   m[2721]["Документация и инструкции"]=3; m[2721]["Обновления"]=0; m[2721]["Обучение/ Передача знаний"]=0; m[2721]["Оценка/ЧТЗ/ Спецификации"]=3; m[2721]["Сбор требований/ предпроект"]=0; m[2721]["Сопровождение: прочие обращения"]=0; m[2721]["Тестирование"]=3;
@@ -85,7 +83,6 @@ const cellColor = (val: number, max: number) => {
     if (val === 2) return "text-yellow-600 bg-yellow-50";
     return "text-emerald-600 bg-emerald-50 font-bold";
   }
-  // max === 4
   if (val === 1) return "text-orange-600 bg-orange-50";
   if (val === 2) return "text-yellow-600 bg-yellow-50";
   if (val === 3) return "text-lime-600 bg-lime-50 font-semibold";
@@ -114,36 +111,36 @@ const Competences = () => {
   return (
     <div className="min-h-screen relative">
       <AnimatedBackground />
-      <div className="relative z-10 max-w-[1400px] mx-auto px-6 py-6">
+      <div className="relative z-10 max-w-[1400px] mx-auto px-3 sm:px-6 py-4 sm:py-6">
         <Navbar />
 
         {/* Export / Import */}
-        <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-6 mb-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Компетенции</h1>
+        <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-4">Компетенции</h1>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h2 className="text-lg font-semibold text-foreground mb-2">Экспорт</h2>
+              <h2 className="text-base sm:text-lg font-semibold text-foreground mb-2">Экспорт</h2>
               <div className="flex flex-col gap-1.5">
                 <a href="#" className="text-sm text-primary hover:underline flex items-center gap-1.5">
-                  <Download className="w-3.5 h-3.5" />
+                  <Download className="w-3.5 h-3.5 shrink-0" />
                   Скачать competencies.csv
                 </a>
                 <a href="#" className="text-sm text-primary hover:underline flex items-center gap-1.5">
-                  <Download className="w-3.5 h-3.5" />
+                  <Download className="w-3.5 h-3.5 shrink-0" />
                   Скачать matrix.xlsx (шаблонный формат)
                 </a>
               </div>
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-foreground mb-2">Импорт (bulk replace)</h2>
+              <h2 className="text-base sm:text-lg font-semibold text-foreground mb-2">Импорт (bulk replace)</h2>
               <p className="text-sm text-muted-foreground mb-3">
                 Поддерживаемые форматы: <span className="font-bold text-foreground">CSV</span> и{" "}
                 <span className="font-bold text-foreground">XLSX</span>.
               </p>
-              <div className="flex items-center gap-3">
-                <Input type="file" accept=".csv,.xlsx" className="w-64 bg-background/70" />
-                <Button className="gap-1.5 shadow-md">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                <Input type="file" accept=".csv,.xlsx" className="w-full sm:w-64 bg-background/70" />
+                <Button className="gap-1.5 shadow-md w-full sm:w-auto">
                   <Upload className="w-4 h-4" />
                   Загрузить файл
                 </Button>
@@ -153,14 +150,14 @@ const Competences = () => {
         </div>
 
         {/* Matrix */}
-        <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-          <h2 className="text-lg font-bold text-foreground mb-1">Матрица компетенций (редактирование на странице)</h2>
+        <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+          <h2 className="text-base sm:text-lg font-bold text-foreground mb-1">Матрица компетенций (редактирование на странице)</h2>
 
           {/* Tabs */}
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2 mb-4 overflow-x-auto">
             <button
               onClick={() => setActiveTab("config")}
-              className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+              className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
                 activeTab === "config"
                   ? "bg-primary text-primary-foreground shadow-md"
                   : "bg-secondary/70 text-secondary-foreground hover:bg-accent"
@@ -170,7 +167,7 @@ const Competences = () => {
             </button>
             <button
               onClick={() => setActiveTab("crm")}
-              className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+              className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
                 activeTab === "crm"
                   ? "bg-primary text-primary-foreground shadow-md"
                   : "bg-secondary/70 text-secondary-foreground hover:bg-accent"
@@ -180,48 +177,52 @@ const Competences = () => {
             </button>
           </div>
 
-          <div className="rounded-xl border border-border overflow-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50 hover:bg-muted/50">
-                  <TableHead className="font-bold text-foreground sticky left-0 bg-muted/90 z-10 min-w-[140px]">ФИО</TableHead>
-                  <TableHead className="font-bold text-foreground w-16 text-center">Bitrix ID</TableHead>
-                  <TableHead className="font-bold text-foreground min-w-[160px]">Должность</TableHead>
-                  {skills.map(s => (
-                    <TableHead key={s} className="font-bold text-foreground text-center min-w-[60px] text-xs">
-                      {s}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {employees.map(emp => (
-                  <TableRow key={emp.id} className="group transition-colors duration-200">
-                    <TableCell className="font-medium text-foreground sticky left-0 bg-card/90 z-10 text-sm">
-                      {emp.name}
-                    </TableCell>
-                    <TableCell className="font-mono text-muted-foreground text-center text-sm">{emp.id}</TableCell>
-                    <TableCell className="text-muted-foreground text-sm">{emp.position}</TableCell>
+          <div className="rounded-xl border border-border overflow-auto scrollbar-thin -mx-4 sm:mx-0">
+            <div className="min-w-[800px]">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50 hover:bg-muted/50">
+                    <TableHead className="font-bold text-foreground sticky left-0 bg-muted/90 z-10 min-w-[120px] sm:min-w-[140px] text-xs sm:text-sm">ФИО</TableHead>
+                    <TableHead className="font-bold text-foreground w-14 sm:w-16 text-center text-xs sm:text-sm">ID</TableHead>
+                    <TableHead className="font-bold text-foreground min-w-[100px] sm:min-w-[160px] text-xs sm:text-sm">Должность</TableHead>
                     {skills.map(s => (
-                      <TableCell key={s} className="text-center p-1">
-                        <input
-                          type="number"
-                          min={0}
-                          max={activeTab === "config" ? 3 : 4}
-                          value={matrix[emp.id]?.[s] ?? 0}
-                          onChange={e => handleChange(emp.id, s, e.target.value)}
-                          className={`w-10 h-8 text-center text-sm rounded-md border border-transparent hover:border-border focus:border-primary outline-none transition-all ${cellColor(matrix[emp.id]?.[s] ?? 0, activeTab === "config" ? 3 : 4)}`}
-                        />
-                      </TableCell>
+                      <TableHead key={s} className="font-bold text-foreground text-center min-w-[50px] sm:min-w-[60px] text-[10px] sm:text-xs">
+                        {s}
+                      </TableHead>
                     ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {employees.map(emp => (
+                    <TableRow key={emp.id} className="group transition-colors duration-200">
+                      <TableCell className="font-medium text-foreground sticky left-0 bg-card/90 z-10 text-xs sm:text-sm">
+                        {emp.name}
+                      </TableCell>
+                      <TableCell className="font-mono text-muted-foreground text-center text-xs sm:text-sm">{emp.id}</TableCell>
+                      <TableCell className="text-muted-foreground text-xs sm:text-sm">{emp.position}</TableCell>
+                      {skills.map(s => (
+                        <TableCell key={s} className="text-center p-1">
+                          <input
+                            type="number"
+                            min={0}
+                            max={activeTab === "config" ? 3 : 4}
+                            value={matrix[emp.id]?.[s] ?? 0}
+                            onChange={e => handleChange(emp.id, s, e.target.value)}
+                            className={`w-9 sm:w-10 h-7 sm:h-8 text-center text-xs sm:text-sm rounded-md border border-transparent hover:border-border focus:border-primary outline-none transition-all ${cellColor(matrix[emp.id]?.[s] ?? 0, activeTab === "config" ? 3 : 4)}`}
+                          />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
 
+          <p className="text-xs text-muted-foreground mt-2 sm:hidden">← Прокрутите таблицу горизонтально →</p>
+
           <div className="mt-4">
-            <Button onClick={handleSave} className="gap-1.5 shadow-md">
+            <Button onClick={handleSave} className="gap-1.5 shadow-md w-full sm:w-auto">
               <Save className="w-4 h-4" />
               Сохранить матрицу
             </Button>
