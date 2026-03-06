@@ -44,9 +44,9 @@ const employeesData: Record<number, {
 
 const statusLabels: Record<string, string> = { "1": "Свободен", "2": "Занят", "3": "Завал" };
 const statusColors: Record<string, string> = {
-  "1": "text-emerald-700 bg-emerald-50 border-emerald-200",
-  "2": "text-amber-700 bg-amber-50 border-amber-200",
-  "3": "text-red-700 bg-red-50 border-red-200",
+  "1": "text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-800",
+  "2": "text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 border-amber-200 dark:border-amber-800",
+  "3": "text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/50 border-red-200 dark:border-red-800",
 };
 
 // Mock tasks
