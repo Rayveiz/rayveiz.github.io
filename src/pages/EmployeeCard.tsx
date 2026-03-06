@@ -93,6 +93,12 @@ const cellColor = (val: number, max: number) => {
   if (val === 3) return "text-lime-600 bg-lime-50 font-semibold";
   return "text-emerald-600 bg-emerald-50 font-bold";
 };
+const periodOptions = [
+  { value: "month", label: "Месяц", days: 30 },
+  { value: "quarter", label: "Квартал (90 дней)", days: 90 },
+  { value: "halfyear", label: "Полгода", days: 180 },
+  { value: "year", label: "Год", days: 365 },
+];
 
 const EmployeeCard = () => {
   const { id } = useParams<{ id: string }>();
