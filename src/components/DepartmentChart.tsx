@@ -1,140 +1,132 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
+import { CalendarDays } from "lucide-react";
 
-const departments = [
-  { key: "dev", name: "Разработка", color: "hsl(170, 75%, 26%)" },
-  { key: "support", name: "Поддержка", color: "hsl(199, 70%, 50%)" },
-  { key: "sales", name: "Продажи", color: "hsl(280, 60%, 55%)" },
-  { key: "hr", name: "HR", color: "hsl(35, 90%, 55%)" },
-  { key: "analytics", name: "Аналитика", color: "hsl(340, 65%, 55%)" },
-];
+const periods = [
+  { key: "week", label: "Неделя", days: 7 },
+  { key: "2weeks", label: "2 недели", days: 14 },
+  { key: "month", label: "Месяц", days: 30 },
+  { key: "quarter", label: "Квартал", days: 90 },
+] as const;
 
-const generateData = () => {
+const generateData = (days: number) => {
   const data = [];
   const now = new Date();
-  for (let i = 13; i >= 0; i--) {
+  for (let i = days - 1; i >= 0; i--) {
     const date = new Date(now);
     date.setDate(date.getDate() - i);
     data.push({
       date: `${date.getDate().toString().padStart(2, "0")}.${(date.getMonth() + 1).toString().padStart(2, "0")}`,
-      dev: Math.floor(Math.random() * 40 + 30),
-      support: Math.floor(Math.random() * 30 + 20),
-      sales: Math.floor(Math.random() * 25 + 15),
-      hr: Math.floor(Math.random() * 20 + 10),
-      analytics: Math.floor(Math.random() * 35 + 20),
+      hours: Math.floor(Math.random() * 35 + 20),
     });
   }
   return data;
 };
 
-const data = generateData();
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-card/95 backdrop-blur-md border border-border rounded-xl px-4 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
+        <p className="text-xs text-muted-foreground font-medium mb-1">{label}</p>
+        <p className="text-lg font-bold text-card-foreground">
+          {payload[0].value} <span className="text-sm font-normal text-muted-foreground">часов</span>
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
 
 const DepartmentChart = () => {
-  const [activeDepts, setActiveDepts] = useState<Set<string>>(
-    new Set(departments.map((d) => d.key))
-  );
+  const [activePeriod, setActivePeriod] = useState<string>("2weeks");
 
-  const toggleDept = (key: string) => {
-    setActiveDepts((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) {
-        if (next.size > 1) next.delete(key);
-      } else {
-        next.add(key);
-      }
-      return next;
-    });
-  };
+  const selectedPeriod = periods.find((p) => p.key === activePeriod)!;
+  const data = useMemo(() => generateData(selectedPeriod.days), [activePeriod]);
+
+  const avgHours = Math.round(data.reduce((s, d) => s + d.hours, 0) / data.length);
+  const maxHours = Math.max(...data.map((d) => d.hours));
 
   return (
-    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-card/80 backdrop-blur-sm border border-border rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
         <div>
-          <h2 className="text-xl font-bold text-card-foreground">
-            Загрузка отделов
+          <h2 className="text-xl font-bold text-card-foreground flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            Загрузка отдела аналитики
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Количество закрытых часов по дням
+            Закрытые часы · Среднее: <span className="font-semibold text-card-foreground">{avgHours}ч</span> · Макс: <span className="font-semibold text-card-foreground">{maxHours}ч</span>
           </p>
         </div>
-        <div className="flex gap-2 flex-wrap">
-          {departments.map((dept) => (
+        <div className="flex items-center gap-1.5 bg-muted/60 rounded-xl p-1">
+          <CalendarDays className="w-4 h-4 text-muted-foreground ml-2" />
+          {periods.map((p) => (
             <button
-              key={dept.key}
-              onClick={() => toggleDept(dept.key)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 border ${
-                activeDepts.has(dept.key)
-                  ? "border-transparent shadow-sm"
-                  : "border-border bg-muted text-muted-foreground opacity-50"
+              key={p.key}
+              onClick={() => setActivePeriod(p.key)}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${
+                activePeriod === p.key
+                  ? "bg-primary text-primary-foreground shadow-[0_2px_8px_rgba(15,118,110,0.3)]"
+                  : "text-muted-foreground hover:text-card-foreground hover:bg-card/80"
               }`}
-              style={
-                activeDepts.has(dept.key)
-                  ? { backgroundColor: dept.color + "20", color: dept.color, borderColor: dept.color + "40" }
-                  : {}
-              }
             >
-              {dept.name}
+              {p.label}
             </button>
           ))}
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={360}>
-        <LineChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(216, 20%, 88%)" />
+      <ResponsiveContainer width="100%" height={380}>
+        <AreaChart data={data} margin={{ top: 10, right: 20, bottom: 5, left: 0 }}>
+          <defs>
+            <linearGradient id="hoursGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="hsl(170, 75%, 26%)" stopOpacity={0.3} />
+              <stop offset="100%" stopColor="hsl(170, 75%, 26%)" stopOpacity={0.02} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(216, 20%, 92%)" vertical={false} />
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 12, fill: "hsl(220, 10%, 42%)" }}
-            axisLine={{ stroke: "hsl(216, 20%, 88%)" }}
+            tick={{ fontSize: 11, fill: "hsl(220, 10%, 42%)" }}
+            axisLine={false}
             tickLine={false}
+            interval={selectedPeriod.days > 30 ? Math.floor(selectedPeriod.days / 12) : 0}
           />
           <YAxis
-            tick={{ fontSize: 12, fill: "hsl(220, 10%, 42%)" }}
-            axisLine={{ stroke: "hsl(216, 20%, 88%)" }}
+            tick={{ fontSize: 11, fill: "hsl(220, 10%, 42%)" }}
+            axisLine={false}
             tickLine={false}
+            width={40}
             label={{
               value: "Часы",
               angle: -90,
               position: "insideLeft",
-              style: { fontSize: 12, fill: "hsl(220, 10%, 42%)" },
+              style: { fontSize: 11, fill: "hsl(220, 10%, 42%)" },
+              offset: 10,
             }}
           />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "hsl(0, 0%, 100%)",
-              border: "1px solid hsl(216, 20%, 88%)",
-              borderRadius: "10px",
-              fontSize: "13px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-            }}
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: "hsl(170, 75%, 26%)", strokeWidth: 1, strokeDasharray: "4 4" }} />
+          <Area
+            type="monotone"
+            dataKey="hours"
+            name="Часы"
+            stroke="hsl(170, 75%, 26%)"
+            strokeWidth={2.5}
+            fill="url(#hoursGradient)"
+            dot={selectedPeriod.days <= 14 ? { r: 4, fill: "hsl(170, 75%, 26%)", strokeWidth: 2, stroke: "hsl(0, 0%, 100%)" } : false}
+            activeDot={{ r: 7, fill: "hsl(170, 75%, 26%)", strokeWidth: 3, stroke: "hsl(0, 0%, 100%)" }}
+            animationDuration={1000}
+            animationEasing="ease-out"
           />
-          <Legend verticalAlign="bottom" height={36} />
-          {departments.map(
-            (dept) =>
-              activeDepts.has(dept.key) && (
-                <Line
-                  key={dept.key}
-                  type="monotone"
-                  dataKey={dept.key}
-                  name={dept.name}
-                  stroke={dept.color}
-                  strokeWidth={2.5}
-                  dot={{ r: 3, strokeWidth: 2 }}
-                  activeDot={{ r: 6, strokeWidth: 2 }}
-                  animationDuration={800}
-                />
-              )
-          )}
-        </LineChart>
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );
