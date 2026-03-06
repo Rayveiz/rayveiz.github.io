@@ -20,7 +20,7 @@ const generateCompetencyData = (days: number) => {
   const seed = days * 7;
   return taskTypes.map((name, i) => ({
     name,
-    count: Math.floor(((seed + i * 17) % 50) + 5 + Math.random() * 20),
+    count: Math.floor(((seed + i * 17) % 50) + 5 + ((seed + i * 137 + 97) * 2654435761 >>> 0) % 20),
   })).sort((a, b) => b.count - a.count);
 };
 
