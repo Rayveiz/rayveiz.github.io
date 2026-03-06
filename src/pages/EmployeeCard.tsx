@@ -167,8 +167,8 @@ const EmployeeCard = () => {
           </h1>
         </div>
 
-        {/* Profile + Output + Dev Plan */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+        {/* Profile + Output & Dev Plan */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           {/* Profile */}
           <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
             <h2 className="text-lg font-semibold text-foreground mb-4">Профиль</h2>
@@ -227,87 +227,90 @@ const EmployeeCard = () => {
             </div>
           </div>
 
-          {/* Output */}
-          <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-            <h2 className="text-lg font-semibold text-foreground mb-4">Выработка</h2>
-            <div className="space-y-3 text-sm">
-              <p className="text-muted-foreground">За 90 дней: <span className="text-foreground font-bold text-lg">{emp.total90d.toFixed(1)} ч</span></p>
-              <p className="text-muted-foreground">Средняя выработка: <span className="text-foreground font-medium">{emp.avgMonthly.toFixed(1)} ч/мес</span> <span className="text-xs">(минимум: {emp.needMonthly.toFixed(1)})</span></p>
-              <p className="text-muted-foreground">План 3 месяца: <span className="text-foreground font-medium">{emp.planHours3m.toFixed(1)} ч</span></p>
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-muted-foreground text-xs">Прогресс</span>
-                  <span className={`text-sm font-bold ${emp.progressPercent >= 100 ? "text-emerald-600" : emp.progressPercent >= 80 ? "text-foreground" : "text-red-500"}`}>{emp.progressPercent}%</span>
+          {/* Right column: Output + Dev Plan stacked */}
+          <div className="flex flex-col gap-4">
+            {/* Output */}
+            <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+              <h2 className="text-lg font-semibold text-foreground mb-4">Выработка</h2>
+              <div className="space-y-3 text-sm">
+                <p className="text-muted-foreground">За 90 дней: <span className="text-foreground font-bold text-lg">{emp.total90d.toFixed(1)} ч</span></p>
+                <p className="text-muted-foreground">Средняя выработка: <span className="text-foreground font-medium">{emp.avgMonthly.toFixed(1)} ч/мес</span> <span className="text-xs">(минимум: {emp.needMonthly.toFixed(1)})</span></p>
+                <p className="text-muted-foreground">План 3 месяца: <span className="text-foreground font-medium">{emp.planHours3m.toFixed(1)} ч</span></p>
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-muted-foreground text-xs">Прогресс</span>
+                    <span className={`text-sm font-bold ${emp.progressPercent >= 100 ? "text-emerald-600" : emp.progressPercent >= 80 ? "text-foreground" : "text-red-500"}`}>{emp.progressPercent}%</span>
+                  </div>
+                  <Progress value={Math.min(emp.progressPercent, 100)} className="h-3" />
                 </div>
-                <Progress value={Math.min(emp.progressPercent, 100)} className="h-3" />
               </div>
             </div>
-          </div>
 
-          {/* Development Plan */}
-          <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-            <h2 className="text-lg font-semibold text-foreground mb-4">План развития</h2>
-            <div className="rounded-xl border border-border overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/50 hover:bg-muted/50">
-                    <TableHead className="font-bold text-foreground">Цель</TableHead>
-                    <TableHead className="font-bold text-foreground w-40">Срок</TableHead>
-                    <TableHead className="w-12" />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {devPlan.map((row, i) => (
-                    <TableRow key={i}>
-                      <TableCell className="p-1.5">
-                        <Input
-                          value={row.goal}
-                          onChange={e => {
-                            const next = [...devPlan];
-                            next[i] = { ...next[i], goal: e.target.value };
-                            setDevPlan(next);
-                          }}
-                          placeholder="Описание цели..."
-                          className="bg-background/70 text-sm h-8"
-                        />
-                      </TableCell>
-                      <TableCell className="p-1.5">
-                        <Input
-                          type="date"
-                          value={row.deadline}
-                          onChange={e => {
-                            const next = [...devPlan];
-                            next[i] = { ...next[i], deadline: e.target.value };
-                            setDevPlan(next);
-                          }}
-                          className="bg-background/70 text-sm h-8"
-                        />
-                      </TableCell>
-                      <TableCell className="p-1.5 text-center">
-                        {devPlan.length > 1 && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
-                            onClick={() => setDevPlan(devPlan.filter((_, j) => j !== i))}
-                          >
-                            ×
-                          </Button>
-                        )}
-                      </TableCell>
+            {/* Development Plan */}
+            <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] flex-1">
+              <h2 className="text-lg font-semibold text-foreground mb-4">План развития</h2>
+              <div className="rounded-xl border border-border overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50 hover:bg-muted/50">
+                      <TableHead className="font-bold text-foreground">Цель</TableHead>
+                      <TableHead className="font-bold text-foreground w-40">Срок</TableHead>
+                      <TableHead className="w-12" />
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {devPlan.map((row, i) => (
+                      <TableRow key={i}>
+                        <TableCell className="p-1.5">
+                          <Input
+                            value={row.goal}
+                            onChange={e => {
+                              const next = [...devPlan];
+                              next[i] = { ...next[i], goal: e.target.value };
+                              setDevPlan(next);
+                            }}
+                            placeholder="Описание цели..."
+                            className="bg-background/70 text-sm h-8"
+                          />
+                        </TableCell>
+                        <TableCell className="p-1.5">
+                          <Input
+                            type="date"
+                            value={row.deadline}
+                            onChange={e => {
+                              const next = [...devPlan];
+                              next[i] = { ...next[i], deadline: e.target.value };
+                              setDevPlan(next);
+                            }}
+                            className="bg-background/70 text-sm h-8"
+                          />
+                        </TableCell>
+                        <TableCell className="p-1.5 text-center">
+                          {devPlan.length > 1 && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                              onClick={() => setDevPlan(devPlan.filter((_, j) => j !== i))}
+                            >
+                              ×
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-3 text-xs"
+                onClick={() => setDevPlan([...devPlan, { goal: "", deadline: "" }])}
+              >
+                + Добавить цель
+              </Button>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-3 text-xs"
-              onClick={() => setDevPlan([...devPlan, { goal: "", deadline: "" }])}
-            >
-              + Добавить цель
-            </Button>
           </div>
         </div>
 
