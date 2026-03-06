@@ -41,6 +41,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 const DepartmentChart = () => {
+  const isMobile = useIsMobile();
   const [activePeriod, setActivePeriod] = useState<string>("2weeks");
 
   const selectedPeriod = periods.find((p) => p.key === activePeriod)!;
