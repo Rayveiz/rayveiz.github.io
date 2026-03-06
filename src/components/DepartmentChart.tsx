@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
@@ -40,6 +41,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 const DepartmentChart = () => {
+  const isMobile = useIsMobile();
   const [activePeriod, setActivePeriod] = useState<string>("2weeks");
 
   const selectedPeriod = periods.find((p) => p.key === activePeriod)!;
@@ -92,7 +94,10 @@ const DepartmentChart = () => {
             tick={{ fontSize: 10, fill: "hsl(220, 10%, 42%)" }}
             axisLine={false}
             tickLine={false}
-            interval={selectedPeriod.days > 14 ? Math.floor(selectedPeriod.days / 8) : 0}
+            interval={isMobile ? Math.max(Math.floor(selectedPeriod.days / 5), 1) : (selectedPeriod.days > 14 ? Math.floor(selectedPeriod.days / 8) : 0)}
+            angle={isMobile ? -45 : 0}
+            textAnchor={isMobile ? "end" : "middle"}
+            height={isMobile ? 50 : 30}
           />
           <YAxis
             tick={{ fontSize: 10, fill: "hsl(220, 10%, 42%)" }}
