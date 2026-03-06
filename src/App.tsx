@@ -9,6 +9,7 @@ import Employees from "./pages/Employees";
 import Absences from "./pages/Absences";
 import Competences from "./pages/Competences";
 import Admins from "./pages/Admins";
+import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
