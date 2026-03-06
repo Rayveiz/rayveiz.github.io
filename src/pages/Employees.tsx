@@ -1,0 +1,227 @@
+import { useState } from "react";
+import Navbar from "@/components/Navbar";
+import AnimatedBackground from "@/components/AnimatedBackground";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
+} from "@/components/ui/table";
+import {
+  Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
+} from "@/components/ui/select";
+import { UserPlus, Save, CreditCard, Trash2, Search } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+interface Employee {
+  id: number;
+  name: string;
+  position: string;
+  status: string;
+}
+
+const initialEmployees: Employee[] = [
+  { id: 2733, name: "Алексашкин Святослав Сергеевич", position: "Младший консультант по информационным технологиям", status: "1" },
+  { id: 2379, name: "Болтнев Станислав Александрович", position: "Ведущий консультант по информационным технологиям", status: "3" },
+  { id: 2721, name: "Ефремов Алексей Владимирович", position: "Ведущий консультант по информационным технологиям", status: "3" },
+  { id: 2365, name: "Казаков Антон Вячеславович", position: "Аналитик", status: "1" },
+  { id: 2713, name: "Лунев Никита", position: "Младший консультант по информационным технологиям", status: "2" },
+  { id: 2705, name: "Петянов Леонид Станиславович", position: "Младший консультант по информационным технологиям", status: "2" },
+  { id: 2473, name: "Пронина Ирина Михайловна", position: "Консультант по информационным технологиям", status: "1" },
+  { id: 1973, name: "Пучков Олег Анатольевич", position: "Ведущий консультант по информационным технологиям", status: "3" },
+  { id: 2691, name: "Садкова Виктория Александровна", position: "Младший консультант по информационным технологиям", status: "1" },
+  { id: 2175, name: "Сокотун Ирина Олеговна", position: "Ведущий консультант по информационным технологиям", status: "2" },
+  { id: 2585, name: "Хисматова Алина Руслановна", position: "Консультант по информационным технологиям", status: "2" },
+  { id: 2325, name: "Шмырина Анастасия Анатольевна", position: "", status: "3" },
+  { id: 2819, name: "Ярков Константин Владимирович", position: "", status: "3" },
+  { id: 2835, name: "Ярышев Владимир Сергеевич", position: "", status: "1" },
+];
+
+const statusLabels: Record<string, string> = {
+  "1": "Свободен",
+  "2": "Занят",
+  "3": "Завал",
+};
+
+const statusColors: Record<string, string> = {
+  "1": "text-emerald-700 bg-emerald-50 border-emerald-200",
+  "2": "text-amber-700 bg-amber-50 border-amber-200",
+  "3": "text-red-700 bg-red-50 border-red-200",
+};
+
+const Employees = () => {
+  const { toast } = useToast();
+  const [employees, setEmployees] = useState<Employee[]>(initialEmployees);
+  const [newBitrixId, setNewBitrixId] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newPosition, setNewPosition] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleAdd = () => {
+    if (!newBitrixId && !newName) {
+      toast({ title: "Ошибка", description: "Укажите Bitrix ID или ФИО", variant: "destructive" });
+      return;
+    }
+    const newEmp: Employee = {
+      id: newBitrixId ? parseInt(newBitrixId) : Math.floor(Math.random() * 9000) + 1000,
+      name: newName || "Новый сотрудник",
+      position: newPosition,
+      status: "1",
+    };
+    setEmployees([...employees, newEmp]);
+    setNewBitrixId("");
+    setNewName("");
+    setNewPosition("");
+    toast({ title: "Сотрудник добавлен", description: `${newEmp.name} добавлен в список` });
+  };
+
+  const handleStatusChange = (id: number, newStatus: string) => {
+    setEmployees(employees.map(e => e.id === id ? { ...e, status: newStatus } : e));
+  };
+
+  const handleDelete = (id: number) => {
+    setEmployees(employees.filter(e => e.id !== id));
+    toast({ title: "Удалено", description: "Сотрудник удалён из списка" });
+  };
+
+  const handleSave = (emp: Employee) => {
+    toast({ title: "Сохранено", description: `Данные ${emp.name} сохранены` });
+  };
+
+  const filtered = employees.filter(e =>
+    e.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    e.position.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    e.id.toString().includes(searchQuery)
+  );
+
+  return (
+    <div className="min-h-screen relative">
+      <AnimatedBackground />
+      <div className="relative z-10 max-w-[1200px] mx-auto px-6 py-6">
+        <Navbar />
+
+        {/* Add employee form */}
+        <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-6 mb-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+          <h1 className="text-2xl font-bold text-foreground mb-1">Сотрудники</h1>
+          <h2 className="text-lg font-semibold text-foreground mb-2">Добавить сотрудника</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Можно указать только <span className="font-bold text-foreground">Bitrix ID</span> или только{" "}
+            <span className="font-bold text-foreground">ФИО</span>: система попробует подтянуть второе из Bitrix.
+          </p>
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-muted-foreground">Bitrix ID:</label>
+              <Input
+                value={newBitrixId}
+                onChange={(e) => setNewBitrixId(e.target.value)}
+                placeholder="ID"
+                className="w-40 bg-background/70"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-muted-foreground">ФИО:</label>
+              <Input
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="Фамилия Имя Отчество"
+                className="w-56 bg-background/70"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-muted-foreground">Должность:</label>
+              <Input
+                value={newPosition}
+                onChange={(e) => setNewPosition(e.target.value)}
+                placeholder="Должность"
+                className="w-56 bg-background/70"
+              />
+            </div>
+            <Button onClick={handleAdd} className="gap-1.5 shadow-md">
+              <UserPlus className="w-4 h-4" />
+              Добавить
+            </Button>
+          </div>
+        </div>
+
+        {/* Employee list */}
+        <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-foreground">Список</h2>
+            <div className="relative w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Поиск..."
+                className="pl-9 bg-background/70"
+              />
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-border overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50 hover:bg-muted/50">
+                  <TableHead className="font-bold text-foreground w-20">ID</TableHead>
+                  <TableHead className="font-bold text-foreground">Имя</TableHead>
+                  <TableHead className="font-bold text-foreground">Должность</TableHead>
+                  <TableHead className="font-bold text-foreground w-44">Статус</TableHead>
+                  <TableHead className="font-bold text-foreground text-right">Действия</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.map((emp) => (
+                  <TableRow key={emp.id} className="group transition-colors duration-200">
+                    <TableCell className="font-mono text-muted-foreground">{emp.id}</TableCell>
+                    <TableCell>
+                      <Input
+                        defaultValue={emp.name}
+                        className="border-transparent bg-transparent hover:bg-background/60 hover:border-border transition-all h-8 text-sm"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        defaultValue={emp.position}
+                        className="border-transparent bg-transparent hover:bg-background/60 hover:border-border transition-all h-8 text-sm"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Select value={emp.status} onValueChange={(v) => handleStatusChange(emp.id, v)}>
+                        <SelectTrigger className={`h-8 text-xs font-medium border rounded-lg w-36 ${statusColors[emp.status]}`}>
+                          <SelectValue>{emp.status} ({statusLabels[emp.status]})</SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">1 (Свободен)</SelectItem>
+                          <SelectItem value="2">2 (Занят)</SelectItem>
+                          <SelectItem value="3">3 (Завал)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <Button size="sm" onClick={() => handleSave(emp)} className="h-7 text-xs px-3 shadow-sm">
+                          <Save className="w-3 h-3 mr-1" />
+                          Сохранить
+                        </Button>
+                        <Button size="sm" variant="outline" className="h-7 text-xs px-3 border-primary/30 text-primary hover:bg-primary/10">
+                          <CreditCard className="w-3 h-3 mr-1" />
+                          Карточка
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => handleDelete(emp.id)} className="h-7 text-xs px-3 shadow-sm">
+                          <Trash2 className="w-3 h-3 mr-1" />
+                          Удалить
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <p className="text-xs text-muted-foreground mt-3">Всего сотрудников: {filtered.length}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Employees;
