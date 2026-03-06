@@ -1,5 +1,8 @@
 import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
+import { format, differenceInDays } from "date-fns";
+import { ru } from "date-fns/locale";
+import { CalendarIcon } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import { Button } from "@/components/ui/button";
@@ -10,6 +13,9 @@ import {
 import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
 } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 import { ArrowLeft, Save, Upload, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
@@ -93,20 +99,16 @@ const cellColor = (val: number, max: number) => {
   if (val === 3) return "text-lime-600 bg-lime-50 font-semibold";
   return "text-emerald-600 bg-emerald-50 font-bold";
 };
-const periodOptions = [
-  { value: "month", label: "Месяц", days: 30 },
-  { value: "quarter", label: "Квартал (90 дней)", days: 90 },
-  { value: "halfyear", label: "Полгода", days: 180 },
-  { value: "year", label: "Год", days: 365 },
-];
-
 const EmployeeCard = () => {
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
   const empId = parseInt(id || "0");
   const emp = employeesData[empId];
 
-  const [outputPeriod, setOutputPeriod] = useState("quarter");
+  const [dateFrom, setDateFrom] = useState<Date>(() => {
+    const d = new Date(); d.setDate(d.getDate() - 90); return d;
+  });
+  const [dateTo, setDateTo] = useState<Date>(new Date());
   const [grade, setGrade] = useState(emp?.grade || "Middle");
   const [devPlan, setDevPlan] = useState<{ goal: string; deadline: string }[]>([
     { goal: "", deadline: "" },
@@ -238,29 +240,45 @@ const EmployeeCard = () => {
           <div className="flex flex-col gap-4">
             {/* Output */}
             <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-foreground">Выработка</h2>
-                <Select value={outputPeriod} onValueChange={setOutputPeriod}>
-                  <SelectTrigger className="w-44 h-8 text-xs bg-background/70"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {periodOptions.map(p => (
-                      <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <h2 className="text-lg font-semibold text-foreground mb-3">Выработка</h2>
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("h-8 text-xs justify-start gap-1.5", !dateFrom && "text-muted-foreground")}>
+                      <CalendarIcon className="w-3.5 h-3.5" />
+                      {dateFrom ? format(dateFrom, "dd.MM.yyyy") : "От"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={dateFrom} onSelect={(d) => d && setDateFrom(d)} initialFocus className="p-3 pointer-events-auto" locale={ru} />
+                  </PopoverContent>
+                </Popover>
+                <span className="text-muted-foreground text-xs">—</span>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("h-8 text-xs justify-start gap-1.5", !dateTo && "text-muted-foreground")}>
+                      <CalendarIcon className="w-3.5 h-3.5" />
+                      {dateTo ? format(dateTo, "dd.MM.yyyy") : "До"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={dateTo} onSelect={(d) => d && setDateTo(d)} initialFocus className="p-3 pointer-events-auto" locale={ru} />
+                  </PopoverContent>
+                </Popover>
               </div>
               {(() => {
-                const period = periodOptions.find(p => p.value === outputPeriod)!;
-                const factor = period.days / 90;
+                const days = Math.max(differenceInDays(dateTo, dateFrom), 1);
+                const factor = days / 90;
                 const totalHours = +(emp.total90d * factor).toFixed(1);
-                const avgMonthly = +(totalHours / (period.days / 30)).toFixed(1);
+                const months = Math.max(days / 30, 1);
+                const avgMonthly = +(totalHours / months).toFixed(1);
                 const planHours = +(emp.planHours3m * factor).toFixed(1);
                 const progress = Math.round((totalHours / planHours) * 100);
                 return (
                   <div className="space-y-3 text-sm">
-                    <p className="text-muted-foreground">За {period.days} дней: <span className="text-foreground font-bold text-lg">{totalHours} ч</span></p>
+                    <p className="text-muted-foreground">За {days} дн.: <span className="text-foreground font-bold text-lg">{totalHours} ч</span></p>
                     <p className="text-muted-foreground">Средняя выработка: <span className="text-foreground font-medium">{avgMonthly} ч/мес</span> <span className="text-xs">(минимум: {emp.needMonthly.toFixed(1)})</span></p>
-                    <p className="text-muted-foreground">План ({period.label.toLowerCase()}): <span className="text-foreground font-medium">{planHours} ч</span></p>
+                    <p className="text-muted-foreground">План: <span className="text-foreground font-medium">{planHours} ч</span></p>
                     <div>
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-muted-foreground text-xs">Прогресс</span>
