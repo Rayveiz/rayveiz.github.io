@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 const navItems = [
@@ -12,19 +14,22 @@ const navItems = [
 
 const Navbar = () => {
   const location = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <nav className="bg-card/80 backdrop-blur-md border border-border rounded-2xl px-5 py-3.5 mb-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] flex items-center justify-between">
-      <div className="flex items-center gap-6">
-        <Link to="/" className="flex items-center gap-2 group">
+    <nav className="bg-card/80 backdrop-blur-md border border-border rounded-2xl px-5 py-3.5 mb-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+      <div className="flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-2 group shrink-0">
           <img src={logo} alt="ПИК" className="h-8 transition-transform duration-300 group-hover:scale-105" />
         </Link>
-        <div className="flex gap-1.5">
+
+        {/* Desktop nav */}
+        <div className="hidden md:flex gap-1.5">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 relative overflow-hidden ${
+              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 whitespace-nowrap ${
                 location.pathname === item.path
                   ? "bg-primary text-primary-foreground shadow-[0_2px_12px_rgba(15,118,110,0.3)]"
                   : "bg-secondary/70 text-secondary-foreground hover:bg-accent hover:shadow-sm"
@@ -34,7 +39,35 @@ const Navbar = () => {
             </Link>
           ))}
         </div>
+
+        {/* Mobile burger */}
+        <button
+          className="md:hidden p-2 rounded-xl bg-secondary/70 text-secondary-foreground hover:bg-accent transition-colors"
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
+          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
       </div>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="md:hidden flex flex-col gap-1.5 mt-3 pt-3 border-t border-border">
+          {navItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              onClick={() => setMobileOpen(false)}
+              className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                location.pathname === item.path
+                  ? "bg-primary text-primary-foreground shadow-[0_2px_12px_rgba(15,118,110,0.3)]"
+                  : "bg-secondary/70 text-secondary-foreground hover:bg-accent hover:shadow-sm"
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      )}
     </nav>
   );
 };
