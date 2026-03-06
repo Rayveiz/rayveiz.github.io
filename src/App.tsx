@@ -10,6 +10,7 @@ import Absences from "./pages/Absences";
 import Competences from "./pages/Competences";
 import Admins from "./pages/Admins";
 import Reports from "./pages/Reports";
+import EmployeeCard from "./pages/EmployeeCard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/employees" element={<Employees />} />
+          <Route path="/employees/:id/card" element={<EmployeeCard />} />
           <Route path="/absences" element={<Absences />} />
           <Route path="/competences" element={<Competences />} />
           <Route path="/admins" element={<Admins />} />

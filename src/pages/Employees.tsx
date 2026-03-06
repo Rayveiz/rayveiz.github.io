@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import { Button } from "@/components/ui/button";
@@ -215,10 +216,12 @@ const Employees = () => {
                           <Save className="w-3 h-3 mr-1" />
                           Сохранить
                         </Button>
-                        <Button size="sm" variant="outline" className="h-7 text-xs px-3 border-primary/30 text-primary hover:bg-primary/10">
-                          <CreditCard className="w-3 h-3 mr-1" />
-                          Карточка
-                        </Button>
+                        <Link to={`/employees/${emp.id}/card`}>
+                          <Button size="sm" variant="outline" className="h-7 text-xs px-3 border-primary/30 text-primary hover:bg-primary/10">
+                            <CreditCard className="w-3 h-3 mr-1" />
+                            Карточка
+                          </Button>
+                        </Link>
                         <Button size="sm" variant="destructive" onClick={() => handleDelete(emp.id)} className="h-7 text-xs px-3 shadow-sm">
                           <Trash2 className="w-3 h-3 mr-1" />
                           Удалить
