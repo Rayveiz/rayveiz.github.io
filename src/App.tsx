@@ -10,6 +10,7 @@ import Absences from "./pages/Absences";
 import Competences from "./pages/Competences";
 import Admins from "./pages/Admins";
 import Reports from "./pages/Reports";
+import EmployeeCard from "./pages/EmployeeCard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
