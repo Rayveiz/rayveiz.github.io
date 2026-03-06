@@ -106,6 +106,7 @@ const EmployeeCard = () => {
   const empId = parseInt(id || "0");
   const emp = employeesData[empId];
 
+  const [outputPeriod, setOutputPeriod] = useState("quarter");
   const [grade, setGrade] = useState(emp?.grade || "Middle");
   const [devPlan, setDevPlan] = useState<{ goal: string; deadline: string }[]>([
     { goal: "", deadline: "" },
