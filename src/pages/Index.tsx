@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import DepartmentChart from "@/components/DepartmentChart";
+import TopCompetenciesTable from "@/components/TopCompetenciesTable";
 import StatsCards from "@/components/StatsCards";
 import { Button } from "@/components/ui/button";
 
@@ -13,7 +14,10 @@ const Index = () => {
       <div className="relative z-10 max-w-[1200px] mx-auto px-3 sm:px-6 py-4 sm:py-6">
         <Navbar />
         <StatsCards />
-        <DepartmentChart />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <DepartmentChart />
+          <TopCompetenciesTable />
+        </div>
         <div className="mt-4 sm:mt-6 flex justify-center">
           <Link to="/stats" className="w-full sm:w-auto">
             <Button
