@@ -100,6 +100,10 @@ const EmployeeCard = () => {
   const empId = parseInt(id || "0");
   const emp = employeesData[empId];
 
+  const [grade, setGrade] = useState(emp?.grade || "Middle");
+  const [devPlan, setDevPlan] = useState<{ goal: string; deadline: string }[]>([
+    { goal: "", deadline: "" },
+  ]);
   const [compMode, setCompMode] = useState<"config" | "crm">("config");
   const [searchQuery, setSearchQuery] = useState("");
   const [configFilter, setConfigFilter] = useState("all");
@@ -171,7 +175,18 @@ const EmployeeCard = () => {
             <div className="space-y-2 text-sm">
               <p className="text-muted-foreground">Должность: <span className="text-foreground font-medium">{emp.position || "—"}</span></p>
               <p className="text-muted-foreground">Статус: <span className={`inline-block px-2 py-0.5 rounded-md text-xs font-medium border ${statusColors[emp.status]}`}>{statusLabels[emp.status]}</span></p>
-              <p className="text-muted-foreground">Грейд (эвристика): <span className="text-foreground font-medium">{emp.grade}</span></p>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <span>Грейд (эвристика):</span>
+                <Select value={grade} onValueChange={setGrade}>
+                  <SelectTrigger className="w-32 h-7 text-xs bg-background/70"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Junior">Junior</SelectItem>
+                    <SelectItem value="Middle">Middle</SelectItem>
+                    <SelectItem value="Senior">Senior</SelectItem>
+                    <SelectItem value="Lead">Lead</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
@@ -179,9 +194,9 @@ const EmployeeCard = () => {
               <div className="flex flex-col items-center">
                 <h3 className="text-sm font-semibold text-foreground mb-2">Фото</h3>
                 {emp.photoUrl ? (
-                  <img src={emp.photoUrl} alt="Фото" className="w-36 h-36 object-cover rounded-xl border border-border mb-2" />
+                  <img src={emp.photoUrl} alt="Фото" className="w-44 h-44 object-cover rounded-xl border border-border mb-2" />
                 ) : (
-                  <div className="w-36 h-36 rounded-xl border border-border bg-muted/50 flex items-center justify-center mb-2">
+                  <div className="w-44 h-44 rounded-xl border border-border bg-muted/50 flex items-center justify-center mb-2">
                     <User className="w-12 h-12 text-muted-foreground/30" />
                   </div>
                 )}
@@ -227,6 +242,72 @@ const EmployeeCard = () => {
                 <Progress value={Math.min(emp.progressPercent, 100)} className="h-3" />
               </div>
             </div>
+          </div>
+
+          {/* Development Plan */}
+          <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+            <h2 className="text-lg font-semibold text-foreground mb-4">План развития</h2>
+            <div className="rounded-xl border border-border overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50 hover:bg-muted/50">
+                    <TableHead className="font-bold text-foreground">Цель</TableHead>
+                    <TableHead className="font-bold text-foreground w-40">Срок</TableHead>
+                    <TableHead className="w-12" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {devPlan.map((row, i) => (
+                    <TableRow key={i}>
+                      <TableCell className="p-1.5">
+                        <Input
+                          value={row.goal}
+                          onChange={e => {
+                            const next = [...devPlan];
+                            next[i] = { ...next[i], goal: e.target.value };
+                            setDevPlan(next);
+                          }}
+                          placeholder="Описание цели..."
+                          className="bg-background/70 text-sm h-8"
+                        />
+                      </TableCell>
+                      <TableCell className="p-1.5">
+                        <Input
+                          type="date"
+                          value={row.deadline}
+                          onChange={e => {
+                            const next = [...devPlan];
+                            next[i] = { ...next[i], deadline: e.target.value };
+                            setDevPlan(next);
+                          }}
+                          className="bg-background/70 text-sm h-8"
+                        />
+                      </TableCell>
+                      <TableCell className="p-1.5 text-center">
+                        {devPlan.length > 1 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                            onClick={() => setDevPlan(devPlan.filter((_, j) => j !== i))}
+                          >
+                            ×
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-3 text-xs"
+              onClick={() => setDevPlan([...devPlan, { goal: "", deadline: "" }])}
+            >
+              + Добавить цель
+            </Button>
           </div>
         </div>
 
