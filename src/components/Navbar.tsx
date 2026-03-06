@@ -31,7 +31,8 @@ const Navbar = () => {
     <nav className="bg-card/80 backdrop-blur-md border border-border rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 mb-4 sm:mb-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
       <div className="flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 group shrink-0">
-          <img src={logo} alt="ПИК" className="h-7 sm:h-8 transition-transform duration-300 group-hover:scale-105 dark:[filter:invert(1)_hue-rotate(180deg)]" />
+          <img src={logo} alt="ПИК" className="h-7 sm:h-8 transition-transform duration-300 group-hover:scale-105 dark:hidden" />
+          <span className="hidden dark:inline-block text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">ПИК</span>
         </Link>
 
         {/* Desktop nav */}

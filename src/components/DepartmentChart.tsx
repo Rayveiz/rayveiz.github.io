@@ -88,7 +88,7 @@ const DepartmentChart = () => {
               <stop offset="100%" stopColor="hsl(170, 75%, 26%)" stopOpacity={0.02} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(216, 20%, 92%)" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 13%, 82%)" vertical={false} />
           <XAxis
             dataKey="date"
             tick={{ fontSize: 10, fill: "hsl(220, 10%, 42%)" }}
