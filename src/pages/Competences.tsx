@@ -6,10 +6,19 @@ import { Input } from "@/components/ui/input";
 import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
 } from "@/components/ui/table";
-import { Download, Upload, Save } from "lucide-react";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from "@/components/ui/dialog";
+import { Download, Upload, Save, Plus, Trash2, UserPlus, UserMinus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const employees = [
+interface Employee {
+  name: string;
+  id: number;
+  position: string;
+}
+
+const defaultEmployees: Employee[] = [
   { name: "Алексашкин Святослав Сергеевич", id: 2733, position: "Младший консультант по и" },
   { name: "Болтнев Станислав Александрович", id: 2379, position: "Ведущий консультант по и" },
   { name: "Ефремов Алексей Владимирович", id: 2721, position: "Ведущий консультант по и" },
@@ -26,9 +35,9 @@ const employees = [
   { name: "Ярышев Владимир Сергеевич", id: 2835, position: "" },
 ];
 
-const configSkills = ["Должность", "УХ", "УПП", "ERP Опер. Учет", "ERP Рег. Учет", "ERP Бюджет", "ЗУП", "БП", "УТ", "УНФ", "ДО", "ТОиР", "ИТИЛ"];
+const defaultConfigSkills = ["Должность", "УХ", "УПП", "ERP Опер. Учет", "ERP Рег. Учет", "ERP Бюджет", "ЗУП", "БП", "УТ", "УНФ", "ДО", "ТОиР", "ИТИЛ"];
 
-const crmSkills = [
+const defaultCrmSkills = [
   "CRM: внедрение, доработки, сопровождение",
   "Документация и инструкции",
   "Обновления",
@@ -42,37 +51,40 @@ const crmSkills = [
 
 type MatrixData = Record<string, Record<string, number>>;
 
-const initMatrix = (): MatrixData => {
+const initMatrix = (employees: Employee[], configSkills: string[], crmSkills: string[]): MatrixData => {
   const m: MatrixData = {};
   employees.forEach(emp => {
     m[emp.id] = {};
     [...configSkills, ...crmSkills].forEach(s => { m[emp.id][s] = 0; });
   });
-  m[2733]["УНФ"]=1; m[2379]["ERP Опер. Учет"]=2; m[2379]["БП"]=3; m[2379]["УНФ"]=1;
-  m[2721]["ERP Опер. Учет"]=3; m[2721]["ERP Бюджет"]=1; m[2721]["ДО"]=3; m[2721]["ТОиР"]=3; m[2721]["ИТИЛ"]=3;
-  m[2365]["БП"]=3; m[2365]["УТ"]=3;
-  m[2713]["БП"]=1;
-  m[2705]["УНФ"]=1;
-  m[2473]["ERP Опер. Учет"]=3; m[2473]["ERP Рег. Учет"]=1; m[2473]["ЗУП"]=1; m[2473]["БП"]=1; m[2473]["УТ"]=2; m[2473]["УНФ"]=2; m[2473]["ДО"]=3;
-  m[1973]["УХ"]=1; m[1973]["ERP Опер. Учет"]=3; m[1973]["ERP Бюджет"]=1; m[1973]["ЗУП"]=1; m[1973]["БП"]=1; m[1973]["УТ"]=1; m[1973]["УНФ"]=1;
-  m[2691]["УНФ"]=1;
-  m[2175]["УПП"]=3; m[2175]["ERP Опер. Учет"]=3; m[2175]["ERP Рег. Учет"]=3;
-  m[2585]["ERP Опер. Учет"]=1; m[2585]["ЗУП"]=2;
-  m[2325]["ERP Опер. Учет"]=1; m[2325]["ERP Рег. Учет"]=2;
-  m[2835]["УХ"]=3; m[2835]["УПП"]=3; m[2835]["ERP Опер. Учет"]=3; m[2835]["ERP Рег. Учет"]=3; m[2835]["ERP Бюджет"]=3; m[2835]["ЗУП"]=3; m[2835]["БП"]=3; m[2835]["УТ"]=3; m[2835]["УНФ"]=3; m[2835]["ДО"]=3; m[2835]["ТОиР"]=3; m[2835]["ИТИЛ"]=3;
-  m[2733]["Документация и инструкции"]=2; m[2733]["Обновления"]=3; m[2733]["Обучение/ Передача знаний"]=2; m[2733]["Оценка/ЧТЗ/ Спецификации"]=2; m[2733]["Сбор требований/ предпроект"]=1; m[2733]["Сопровождение: прочие обращения"]=3; m[2733]["Тестирование"]=2;
-  m[2379]["Документация и инструкции"]=3; m[2379]["Обновления"]=2; m[2379]["Обучение/ Передача знаний"]=3; m[2379]["Оценка/ЧТЗ/ Спецификации"]=4; m[2379]["Сбор требований/ предпроект"]=4; m[2379]["Сопровождение: прочие обращения"]=3; m[2379]["Тестирование"]=3;
-  m[2721]["Документация и инструкции"]=3; m[2721]["Обновления"]=0; m[2721]["Обучение/ Передача знаний"]=0; m[2721]["Оценка/ЧТЗ/ Спецификации"]=3; m[2721]["Сбор требований/ предпроект"]=0; m[2721]["Сопровождение: прочие обращения"]=0; m[2721]["Тестирование"]=3;
-  m[2365]["Документация и инструкции"]=4; m[2365]["Обновления"]=3; m[2365]["Обучение/ Передача знаний"]=4; m[2365]["Оценка/ЧТЗ/ Спецификации"]=4; m[2365]["Сбор требований/ предпроект"]=4; m[2365]["Сопровождение: прочие обращения"]=3; m[2365]["Тестирование"]=4;
-  m[2713]["Документация и инструкции"]=2; m[2713]["Обновления"]=2; m[2713]["Обучение/ Передача знаний"]=3; m[2713]["Оценка/ЧТЗ/ Спецификации"]=1; m[2713]["Сбор требований/ предпроект"]=2; m[2713]["Сопровождение: прочие обращения"]=3; m[2713]["Тестирование"]=3;
-  m[2705]["Документация и инструкции"]=2; m[2705]["Обновления"]=4; m[2705]["Обучение/ Передача знаний"]=2; m[2705]["Оценка/ЧТЗ/ Спецификации"]=2; m[2705]["Сбор требований/ предпроект"]=2; m[2705]["Сопровождение: прочие обращения"]=4; m[2705]["Тестирование"]=2;
-  m[2473]["Документация и инструкции"]=3; m[2473]["Обновления"]=3; m[2473]["Обучение/ Передача знаний"]=3; m[2473]["Оценка/ЧТЗ/ Спецификации"]=3; m[2473]["Сбор требований/ предпроект"]=3; m[2473]["Сопровождение: прочие обращения"]=3; m[2473]["Тестирование"]=3;
-  m[1973]["Документация и инструкции"]=3; m[1973]["Обновления"]=1; m[1973]["Обучение/ Передача знаний"]=3; m[1973]["Оценка/ЧТЗ/ Спецификации"]=4; m[1973]["Сбор требований/ предпроект"]=3; m[1973]["Сопровождение: прочие обращения"]=3; m[1973]["Тестирование"]=3;
-  m[2691]["Документация и инструкции"]=2; m[2691]["Обновления"]=4; m[2691]["Обучение/ Передача знаний"]=2; m[2691]["Оценка/ЧТЗ/ Спецификации"]=2; m[2691]["Сбор требований/ предпроект"]=2; m[2691]["Сопровождение: прочие обращения"]=4; m[2691]["Тестирование"]=2;
-  m[2175]["Документация и инструкции"]=3; m[2175]["Обновления"]=1; m[2175]["Обучение/ Передача знаний"]=3; m[2175]["Оценка/ЧТЗ/ Спецификации"]=3; m[2175]["Сбор требований/ предпроект"]=3; m[2175]["Сопровождение: прочие обращения"]=3; m[2175]["Тестирование"]=3;
-  m[2585]["Документация и инструкции"]=2; m[2585]["Обновления"]=3; m[2585]["Обучение/ Передача знаний"]=2; m[2585]["Оценка/ЧТЗ/ Спецификации"]=2; m[2585]["Сбор требований/ предпроект"]=2; m[2585]["Сопровождение: прочие обращения"]=3; m[2585]["Тестирование"]=3;
-  m[2325]["Документация и инструкции"]=2; m[2325]["Обновления"]=1; m[2325]["Обучение/ Передача знаний"]=3; m[2325]["Оценка/ЧТЗ/ Спецификации"]=3; m[2325]["Сбор требований/ предпроект"]=2; m[2325]["Сопровождение: прочие обращения"]=3; m[2325]["Тестирование"]=3;
-  m[2819]["Документация и инструкции"]=2; m[2819]["Обновления"]=2; m[2819]["Обучение/ Передача знаний"]=0; m[2819]["Оценка/ЧТЗ/ Спецификации"]=2; m[2819]["Сбор требований/ предпроект"]=0; m[2819]["Сопровождение: прочие обращения"]=0; m[2819]["Тестирование"]=0;
+  // Pre-fill data
+  if (m[2733]) { m[2733]["УНФ"]=1; }
+  if (m[2379]) { m[2379]["ERP Опер. Учет"]=2; m[2379]["БП"]=3; m[2379]["УНФ"]=1; }
+  if (m[2721]) { m[2721]["ERP Опер. Учет"]=3; m[2721]["ERP Бюджет"]=1; m[2721]["ДО"]=3; m[2721]["ТОиР"]=3; m[2721]["ИТИЛ"]=3; }
+  if (m[2365]) { m[2365]["БП"]=3; m[2365]["УТ"]=3; }
+  if (m[2713]) { m[2713]["БП"]=1; }
+  if (m[2705]) { m[2705]["УНФ"]=1; }
+  if (m[2473]) { m[2473]["ERP Опер. Учет"]=3; m[2473]["ERP Рег. Учет"]=1; m[2473]["ЗУП"]=1; m[2473]["БП"]=1; m[2473]["УТ"]=2; m[2473]["УНФ"]=2; m[2473]["ДО"]=3; }
+  if (m[1973]) { m[1973]["УХ"]=1; m[1973]["ERP Опер. Учет"]=3; m[1973]["ERP Бюджет"]=1; m[1973]["ЗУП"]=1; m[1973]["БП"]=1; m[1973]["УТ"]=1; m[1973]["УНФ"]=1; }
+  if (m[2691]) { m[2691]["УНФ"]=1; }
+  if (m[2175]) { m[2175]["УПП"]=3; m[2175]["ERP Опер. Учет"]=3; m[2175]["ERP Рег. Учет"]=3; }
+  if (m[2585]) { m[2585]["ERP Опер. Учет"]=1; m[2585]["ЗУП"]=2; }
+  if (m[2325]) { m[2325]["ERP Опер. Учет"]=1; m[2325]["ERP Рег. Учет"]=2; }
+  if (m[2835]) { m[2835]["УХ"]=3; m[2835]["УПП"]=3; m[2835]["ERP Опер. Учет"]=3; m[2835]["ERP Рег. Учет"]=3; m[2835]["ERP Бюджет"]=3; m[2835]["ЗУП"]=3; m[2835]["БП"]=3; m[2835]["УТ"]=3; m[2835]["УНФ"]=3; m[2835]["ДО"]=3; m[2835]["ТОиР"]=3; m[2835]["ИТИЛ"]=3; }
+  // CRM data
+  if (m[2733]) { m[2733]["Документация и инструкции"]=2; m[2733]["Обновления"]=3; m[2733]["Обучение/ Передача знаний"]=2; m[2733]["Оценка/ЧТЗ/ Спецификации"]=2; m[2733]["Сбор требований/ предпроект"]=1; m[2733]["Сопровождение: прочие обращения"]=3; m[2733]["Тестирование"]=2; }
+  if (m[2379]) { m[2379]["Документация и инструкции"]=3; m[2379]["Обновления"]=2; m[2379]["Обучение/ Передача знаний"]=3; m[2379]["Оценка/ЧТЗ/ Спецификации"]=4; m[2379]["Сбор требований/ предпроект"]=4; m[2379]["Сопровождение: прочие обращения"]=3; m[2379]["Тестирование"]=3; }
+  if (m[2721]) { m[2721]["Документация и инструкции"]=3; m[2721]["Оценка/ЧТЗ/ Спецификации"]=3; m[2721]["Тестирование"]=3; }
+  if (m[2365]) { m[2365]["Документация и инструкции"]=4; m[2365]["Обновления"]=3; m[2365]["Обучение/ Передача знаний"]=4; m[2365]["Оценка/ЧТЗ/ Спецификации"]=4; m[2365]["Сбор требований/ предпроект"]=4; m[2365]["Сопровождение: прочие обращения"]=3; m[2365]["Тестирование"]=4; }
+  if (m[2713]) { m[2713]["Документация и инструкции"]=2; m[2713]["Обновления"]=2; m[2713]["Обучение/ Передача знаний"]=3; m[2713]["Оценка/ЧТЗ/ Спецификации"]=1; m[2713]["Сбор требований/ предпроект"]=2; m[2713]["Сопровождение: прочие обращения"]=3; m[2713]["Тестирование"]=3; }
+  if (m[2705]) { m[2705]["Документация и инструкции"]=2; m[2705]["Обновления"]=4; m[2705]["Обучение/ Передача знаний"]=2; m[2705]["Оценка/ЧТЗ/ Спецификации"]=2; m[2705]["Сбор требований/ предпроект"]=2; m[2705]["Сопровождение: прочие обращения"]=4; m[2705]["Тестирование"]=2; }
+  if (m[2473]) { m[2473]["Документация и инструкции"]=3; m[2473]["Обновления"]=3; m[2473]["Обучение/ Передача знаний"]=3; m[2473]["Оценка/ЧТЗ/ Спецификации"]=3; m[2473]["Сбор требований/ предпроект"]=3; m[2473]["Сопровождение: прочие обращения"]=3; m[2473]["Тестирование"]=3; }
+  if (m[1973]) { m[1973]["Документация и инструкции"]=3; m[1973]["Обновления"]=1; m[1973]["Обучение/ Передача знаний"]=3; m[1973]["Оценка/ЧТЗ/ Спецификации"]=4; m[1973]["Сбор требований/ предпроект"]=3; m[1973]["Сопровождение: прочие обращения"]=3; m[1973]["Тестирование"]=3; }
+  if (m[2691]) { m[2691]["Документация и инструкции"]=2; m[2691]["Обновления"]=4; m[2691]["Обучение/ Передача знаний"]=2; m[2691]["Оценка/ЧТЗ/ Спецификации"]=2; m[2691]["Сбор требований/ предпроект"]=2; m[2691]["Сопровождение: прочие обращения"]=4; m[2691]["Тестирование"]=2; }
+  if (m[2175]) { m[2175]["Документация и инструкции"]=3; m[2175]["Обновления"]=1; m[2175]["Обучение/ Передача знаний"]=3; m[2175]["Оценка/ЧТЗ/ Спецификации"]=3; m[2175]["Сбор требований/ предпроект"]=3; m[2175]["Сопровождение: прочие обращения"]=3; m[2175]["Тестирование"]=3; }
+  if (m[2585]) { m[2585]["Документация и инструкции"]=2; m[2585]["Обновления"]=3; m[2585]["Обучение/ Передача знаний"]=2; m[2585]["Оценка/ЧТЗ/ Спецификации"]=2; m[2585]["Сбор требований/ предпроект"]=2; m[2585]["Сопровождение: прочие обращения"]=3; m[2585]["Тестирование"]=3; }
+  if (m[2325]) { m[2325]["Документация и инструкции"]=2; m[2325]["Обновления"]=1; m[2325]["Обучение/ Передача знаний"]=3; m[2325]["Оценка/ЧТЗ/ Спецификации"]=3; m[2325]["Сбор требований/ предпроект"]=2; m[2325]["Сопровождение: прочие обращения"]=3; m[2325]["Тестирование"]=3; }
+  if (m[2819]) { m[2819]["Документация и инструкции"]=2; m[2819]["Обновления"]=2; }
   return m;
 };
 
@@ -91,8 +103,19 @@ const cellColor = (val: number, max: number) => {
 
 const Competences = () => {
   const { toast } = useToast();
-  const [matrix, setMatrix] = useState<MatrixData>(initMatrix);
+  const [employees, setEmployees] = useState<Employee[]>(defaultEmployees);
+  const [configSkills, setConfigSkills] = useState<string[]>(defaultConfigSkills);
+  const [crmSkills, setCrmSkills] = useState<string[]>(defaultCrmSkills);
+  const [matrix, setMatrix] = useState<MatrixData>(() => initMatrix(defaultEmployees, defaultConfigSkills, defaultCrmSkills));
   const [activeTab, setActiveTab] = useState<"config" | "crm">("config");
+
+  // Dialogs
+  const [showAddSkill, setShowAddSkill] = useState(false);
+  const [newSkillName, setNewSkillName] = useState("");
+  const [showAddEmployee, setShowAddEmployee] = useState(false);
+  const [newEmpName, setNewEmpName] = useState("");
+  const [newEmpId, setNewEmpId] = useState("");
+  const [newEmpPosition, setNewEmpPosition] = useState("");
 
   const skills = activeTab === "config" ? configSkills : crmSkills;
 
@@ -108,6 +131,88 @@ const Competences = () => {
     toast({ title: "Сохранено", description: "Матрица компетенций сохранена" });
   };
 
+  // Add skill
+  const handleAddSkill = () => {
+    const name = newSkillName.trim();
+    if (!name) return;
+    if ([...configSkills, ...crmSkills].includes(name)) {
+      toast({ title: "Ошибка", description: "Такая компетенция уже существует", variant: "destructive" });
+      return;
+    }
+    if (activeTab === "config") {
+      setConfigSkills(prev => [...prev, name]);
+    } else {
+      setCrmSkills(prev => [...prev, name]);
+    }
+    // Init matrix for new skill
+    setMatrix(prev => {
+      const next = { ...prev };
+      employees.forEach(emp => {
+        next[emp.id] = { ...next[emp.id], [name]: 0 };
+      });
+      return next;
+    });
+    setNewSkillName("");
+    setShowAddSkill(false);
+    toast({ title: "Добавлено", description: `Компетенция «${name}» добавлена` });
+  };
+
+  // Remove skill
+  const handleRemoveSkill = (skill: string) => {
+    if (activeTab === "config") {
+      setConfigSkills(prev => prev.filter(s => s !== skill));
+    } else {
+      setCrmSkills(prev => prev.filter(s => s !== skill));
+    }
+    setMatrix(prev => {
+      const next = { ...prev };
+      Object.keys(next).forEach(id => {
+        const row = { ...next[id] };
+        delete row[skill];
+        next[id] = row;
+      });
+      return next;
+    });
+    toast({ title: "Удалено", description: `Компетенция «${skill}» удалена` });
+  };
+
+  // Add employee
+  const handleAddEmployee = () => {
+    const name = newEmpName.trim();
+    const id = parseInt(newEmpId);
+    if (!name || !id) {
+      toast({ title: "Ошибка", description: "Укажите ФИО и ID сотрудника", variant: "destructive" });
+      return;
+    }
+    if (employees.some(e => e.id === id)) {
+      toast({ title: "Ошибка", description: "Сотрудник с таким ID уже существует", variant: "destructive" });
+      return;
+    }
+    const emp: Employee = { name, id, position: newEmpPosition.trim() };
+    setEmployees(prev => [...prev, emp]);
+    setMatrix(prev => {
+      const row: Record<string, number> = {};
+      [...configSkills, ...crmSkills].forEach(s => { row[s] = 0; });
+      return { ...prev, [id]: row };
+    });
+    setNewEmpName("");
+    setNewEmpId("");
+    setNewEmpPosition("");
+    setShowAddEmployee(false);
+    toast({ title: "Добавлено", description: `Сотрудник «${name}» добавлен в матрицу` });
+  };
+
+  // Remove employee
+  const handleRemoveEmployee = (empId: number) => {
+    setEmployees(prev => prev.filter(e => e.id !== empId));
+    setMatrix(prev => {
+      const next = { ...prev };
+      delete next[empId];
+      return next;
+    });
+    toast({ title: "Удалено", description: "Сотрудник удалён из матрицы" });
+  };
+
   return (
     <div className="min-h-screen relative">
       <AnimatedBackground />
@@ -117,7 +222,6 @@ const Competences = () => {
         {/* Export / Import */}
         <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
           <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-4">Компетенции</h1>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h2 className="text-base sm:text-lg font-semibold text-foreground mb-2">Экспорт</h2>
@@ -151,7 +255,19 @@ const Competences = () => {
 
         {/* Matrix */}
         <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-          <h2 className="text-base sm:text-lg font-bold text-foreground mb-1">Матрица компетенций (редактирование на странице)</h2>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-1">
+            <h2 className="text-base sm:text-lg font-bold text-foreground">Матрица компетенций (редактирование на странице)</h2>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setShowAddEmployee(true)}>
+                <UserPlus className="w-4 h-4" />
+                Сотрудник
+              </Button>
+              <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setShowAddSkill(true)}>
+                <Plus className="w-4 h-4" />
+                Компетенция
+              </Button>
+            </div>
+          </div>
 
           {/* Tabs */}
           <div className="flex gap-2 mb-4 overflow-x-auto">
@@ -186,15 +302,27 @@ const Competences = () => {
                     <TableHead className="font-bold text-foreground w-14 sm:w-16 text-center text-xs sm:text-sm">ID</TableHead>
                     <TableHead className="font-bold text-foreground min-w-[100px] sm:min-w-[160px] text-xs sm:text-sm">Должность</TableHead>
                     {skills.map(s => (
-                      <TableHead key={s} className="font-bold text-foreground text-center min-w-[50px] sm:min-w-[60px] text-[10px] sm:text-xs">
-                        {s}
+                      <TableHead key={s} className="font-bold text-foreground text-center min-w-[50px] sm:min-w-[60px] text-[10px] sm:text-xs relative group">
+                        <div className="flex flex-col items-center gap-0.5">
+                          <span>{s}</span>
+                          <button
+                            onClick={() => handleRemoveSkill(s)}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive/80"
+                            title={`Удалить «${s}»`}
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
                       </TableHead>
                     ))}
+                    <TableHead className="w-10 text-center text-xs">
+                      <span className="sr-only">Действия</span>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {employees.map(emp => (
-                    <TableRow key={emp.id} className="group transition-colors duration-200">
+                    <TableRow key={emp.id} className="group/row transition-colors duration-200">
                       <TableCell className="font-medium text-foreground sticky left-0 bg-card/90 z-10 text-xs sm:text-sm">
                         {emp.name}
                       </TableCell>
@@ -212,6 +340,15 @@ const Competences = () => {
                           />
                         </TableCell>
                       ))}
+                      <TableCell className="text-center p-1">
+                        <button
+                          onClick={() => handleRemoveEmployee(emp.id)}
+                          className="opacity-0 group-hover/row:opacity-100 transition-opacity text-destructive hover:text-destructive/80 p-1"
+                          title="Удалить сотрудника"
+                        >
+                          <UserMinus className="w-4 h-4" />
+                        </button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -229,6 +366,61 @@ const Competences = () => {
           </div>
         </div>
       </div>
+
+      {/* Add Skill Dialog */}
+      <Dialog open={showAddSkill} onOpenChange={setShowAddSkill}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              Добавить {activeTab === "config" ? "конфигурацию" : "компетенцию CRM"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input
+              placeholder="Название"
+              value={newSkillName}
+              onChange={e => setNewSkillName(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && handleAddSkill()}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddSkill(false)}>Отмена</Button>
+            <Button onClick={handleAddSkill}>Добавить</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Employee Dialog */}
+      <Dialog open={showAddEmployee} onOpenChange={setShowAddEmployee}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Добавить сотрудника в матрицу</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input
+              placeholder="ФИО"
+              value={newEmpName}
+              onChange={e => setNewEmpName(e.target.value)}
+            />
+            <Input
+              placeholder="ID (Битрикс)"
+              type="number"
+              value={newEmpId}
+              onChange={e => setNewEmpId(e.target.value)}
+            />
+            <Input
+              placeholder="Должность"
+              value={newEmpPosition}
+              onChange={e => setNewEmpPosition(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && handleAddEmployee()}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddEmployee(false)}>Отмена</Button>
+            <Button onClick={handleAddEmployee}>Добавить</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
