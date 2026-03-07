@@ -234,6 +234,7 @@ const EmployeeCard = () => {
                     <SelectItem value="Автономный результатник">Автономный результатник</SelectItem>
                     <SelectItem value="Адаптивный координатор">Адаптивный координатор</SelectItem>
                     <SelectItem value="Сбалансированный исполнитель">Сбалансированный исполнитель</SelectItem>
+                    <SelectItem value="Нужен контур управления">Нужен контур управления</SelectItem>
                   </SelectContent>
                 </Select>
                 <div className="w-36 h-36 rounded-xl border border-dashed border-border bg-muted/30 flex items-center justify-center mb-2">
