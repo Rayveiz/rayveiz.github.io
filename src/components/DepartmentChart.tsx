@@ -69,7 +69,7 @@ const DepartmentChart = () => {
         <div>
           <h2 className="text-lg sm:text-xl font-bold text-card-foreground flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            Загрузка отдела: {selectedDept.label}
+            Закрытые отделом часы: {selectedDept.label}
           </h2>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             Закрытые часы · Среднее: <span className="font-semibold text-card-foreground">{avgHours}ч</span> · Макс: <span className="font-semibold text-card-foreground">{maxHours}ч</span>
