@@ -119,6 +119,7 @@ const EmployeeCard = () => {
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
+  const [employeeType, setEmployeeType] = useState("Процессный исполнитель");
   const [compScores, setCompScores] = useState<Record<string, number>>(() => {
     const scores: Record<string, number> = {};
     [...configSkills, ...crmSkills].forEach(s => { scores[s] = Math.floor(Math.random() * 4); });
@@ -224,6 +225,17 @@ const EmployeeCard = () => {
               {/* Тип сотрудника */}
               <div className="flex flex-col items-center">
                 <h3 className="text-sm font-semibold text-foreground mb-2 text-center leading-tight">Актуальный тип сотрудника<br /><span className="text-[11px] font-normal text-muted-foreground">по результатам последнего опроса</span></h3>
+                <Select value={employeeType} onValueChange={setEmployeeType}>
+                  <SelectTrigger className="w-56 h-8 text-xs bg-background/70 mb-2"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Процессный исполнитель">Процессный исполнитель</SelectItem>
+                    <SelectItem value="Надежный гибкий исполнитель">Надежный гибкий исполнитель</SelectItem>
+                    <SelectItem value="Творческий исследователь">Творческий исследователь</SelectItem>
+                    <SelectItem value="Автономный результатник">Автономный результатник</SelectItem>
+                    <SelectItem value="Адаптивный координатор">Адаптивный координатор</SelectItem>
+                    <SelectItem value="Сбалансированный исполнитель">Сбалансированный исполнитель</SelectItem>
+                  </SelectContent>
+                </Select>
                 <div className="w-36 h-36 rounded-xl border border-dashed border-border bg-muted/30 flex items-center justify-center mb-2">
                   <User className="w-12 h-12 text-muted-foreground/20" />
                 </div>
