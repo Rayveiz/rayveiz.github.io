@@ -8,6 +8,7 @@ const navItems = [
   { label: "Сотрудники", path: "/employees" },
   { label: "Отсутствия", path: "/absences" },
   { label: "Компетенции", path: "/competences" },
+  { label: "Грейды", path: "/grades" },
   { label: "Админы", path: "/admins" },
   { label: "Отчеты", path: "/reports" },
 ];
