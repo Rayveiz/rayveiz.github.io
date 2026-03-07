@@ -185,7 +185,7 @@ const EmployeeCard = () => {
             {/* Profile header with gradient accent */}
             <div className="h-2 bg-gradient-to-r from-primary via-primary/70 to-primary/40" />
             <div className="p-4 sm:p-6">
-              <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-foreground">Профиль</h2>
                 <div className="flex items-center gap-1 bg-muted/50 rounded-full p-0.5 border border-border">
                   <button
@@ -213,32 +213,8 @@ const EmployeeCard = () => {
                 </div>
               </div>
 
-              {/* Info cards */}
-              <div className="space-y-2.5 mb-5">
-                <div className="flex items-start gap-3 bg-muted/30 rounded-xl px-3.5 py-2.5 border border-border/50">
-                  <span className="text-xs text-muted-foreground whitespace-nowrap mt-0.5">Должность</span>
-                  <span className="text-sm text-foreground font-medium ml-auto text-right">{emp.position || "—"}</span>
-                </div>
-                <div className="flex items-center gap-3 bg-muted/30 rounded-xl px-3.5 py-2.5 border border-border/50">
-                  <span className="text-xs text-muted-foreground">Статус</span>
-                  <span className={`ml-auto inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold border ${statusColors[emp.status]}`}>{statusLabels[emp.status]}</span>
-                </div>
-                <div className="flex items-center gap-3 bg-muted/30 rounded-xl px-3.5 py-2.5 border border-border/50">
-                  <span className="text-xs text-muted-foreground">Грейд</span>
-                  <Select value={grade} onValueChange={setGrade}>
-                    <SelectTrigger className="ml-auto w-28 h-7 text-xs bg-background/80 border-border/60 rounded-lg"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Junior">Junior</SelectItem>
-                      <SelectItem value="Middle">Middle</SelectItem>
-                      <SelectItem value="Senior">Senior</SelectItem>
-                      <SelectItem value="Lead">Lead</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Photos row */}
-              <div className="flex gap-4">
+              {/* Photos & type row — moved to top */}
+              <div className="flex gap-4 mb-5">
                 {/* Employee photo */}
                 <div className="flex flex-col items-center flex-1">
                   <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Фото</span>
@@ -283,6 +259,30 @@ const EmployeeCard = () => {
                     rows={2}
                     className="w-full text-xs rounded-xl border border-border/60 bg-background/60 px-3 py-2 text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-1 focus:ring-primary/40"
                   />
+                </div>
+              </div>
+
+              {/* Info cards — moved below */}
+              <div className="space-y-2.5">
+                <div className="flex items-start gap-3 bg-muted/30 rounded-xl px-3.5 py-2.5 border border-border/50">
+                  <span className="text-xs text-muted-foreground whitespace-nowrap mt-0.5">Должность</span>
+                  <span className="text-sm text-foreground font-medium ml-auto text-right">{emp.position || "—"}</span>
+                </div>
+                <div className="flex items-center gap-3 bg-muted/30 rounded-xl px-3.5 py-2.5 border border-border/50">
+                  <span className="text-xs text-muted-foreground">Статус</span>
+                  <span className={`ml-auto inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold border ${statusColors[emp.status]}`}>{statusLabels[emp.status]}</span>
+                </div>
+                <div className="flex items-center gap-3 bg-muted/30 rounded-xl px-3.5 py-2.5 border border-border/50">
+                  <span className="text-xs text-muted-foreground">Грейд</span>
+                  <Select value={grade} onValueChange={setGrade}>
+                    <SelectTrigger className="ml-auto w-28 h-7 text-xs bg-background/80 border-border/60 rounded-lg"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Junior">Junior</SelectItem>
+                      <SelectItem value="Middle">Middle</SelectItem>
+                      <SelectItem value="Senior">Senior</SelectItem>
+                      <SelectItem value="Lead">Lead</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
