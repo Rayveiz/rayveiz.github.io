@@ -120,6 +120,7 @@ const EmployeeCard = () => {
   const [statusFilter, setStatusFilter] = useState("all");
 
   const [employeeType, setEmployeeType] = useState("Процессный исполнитель");
+  const [gender, setGender] = useState<"male" | "female">("male");
   const [compScores, setCompScores] = useState<Record<string, number>>(() => {
     const scores: Record<string, number> = {};
     [...configSkills, ...crmSkills].forEach(s => { scores[s] = Math.floor(Math.random() * 4); });
@@ -180,71 +181,109 @@ const EmployeeCard = () => {
         {/* Profile + Output & Dev Plan */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           {/* Profile */}
-          <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-            <h2 className="text-lg font-semibold text-foreground mb-4">Профиль</h2>
-            <div className="space-y-2 text-sm">
-              <p className="text-muted-foreground">Должность: <span className="text-foreground font-medium">{emp.position || "—"}</span></p>
-              <p className="text-muted-foreground">Статус: <span className={`inline-block px-2 py-0.5 rounded-md text-xs font-medium border ${statusColors[emp.status]}`}>{statusLabels[emp.status]}</span></p>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <span>Грейд (эвристика):</span>
-                <Select value={grade} onValueChange={setGrade}>
-                  <SelectTrigger className="w-32 h-7 text-xs bg-background/70"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Junior">Junior</SelectItem>
-                    <SelectItem value="Middle">Middle</SelectItem>
-                    <SelectItem value="Senior">Senior</SelectItem>
-                    <SelectItem value="Lead">Lead</SelectItem>
-                  </SelectContent>
-                </Select>
+          <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] overflow-hidden">
+            {/* Profile header with gradient accent */}
+            <div className="h-2 bg-gradient-to-r from-primary via-primary/70 to-primary/40" />
+            <div className="p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-lg font-semibold text-foreground">Профиль</h2>
+                <div className="flex items-center gap-1 bg-muted/50 rounded-full p-0.5 border border-border">
+                  <button
+                    onClick={() => setGender("male")}
+                    className={cn(
+                      "px-3 py-1 rounded-full text-xs font-medium transition-all",
+                      gender === "male"
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    ♂ Муж
+                  </button>
+                  <button
+                    onClick={() => setGender("female")}
+                    className={cn(
+                      "px-3 py-1 rounded-full text-xs font-medium transition-all",
+                      gender === "female"
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    ♀ Жен
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 mt-4">
-              {/* Фото сотрудника */}
-              <div className="flex flex-col items-center">
-                <h3 className="text-sm font-semibold text-foreground mb-2">Фото</h3>
-                {emp.photoUrl ? (
-                  <img src={emp.photoUrl} alt="Фото" className="w-44 h-44 object-cover rounded-xl border border-border mb-2" />
-                ) : (
-                  <div className="w-44 h-44 rounded-xl border border-border bg-muted/50 flex items-center justify-center mb-2">
-                    <User className="w-12 h-12 text-muted-foreground/30" />
-                  </div>
-                )}
-                <p className="text-[11px] text-muted-foreground text-center mb-2">
-                  {emp.photoUrl ? "Фото загружено" : "Фото отсутствует"}
-                </p>
-                <div className="flex items-center gap-1.5">
-                  <Input type="file" accept=".jpg,.jpeg,.png,.webp" className="w-36 bg-background/70 text-xs" />
-                  <Button size="sm" className="gap-1 shrink-0 text-xs px-2">
+              {/* Info cards */}
+              <div className="space-y-2.5 mb-5">
+                <div className="flex items-start gap-3 bg-muted/30 rounded-xl px-3.5 py-2.5 border border-border/50">
+                  <span className="text-xs text-muted-foreground whitespace-nowrap mt-0.5">Должность</span>
+                  <span className="text-sm text-foreground font-medium ml-auto text-right">{emp.position || "—"}</span>
+                </div>
+                <div className="flex items-center gap-3 bg-muted/30 rounded-xl px-3.5 py-2.5 border border-border/50">
+                  <span className="text-xs text-muted-foreground">Статус</span>
+                  <span className={`ml-auto inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold border ${statusColors[emp.status]}`}>{statusLabels[emp.status]}</span>
+                </div>
+                <div className="flex items-center gap-3 bg-muted/30 rounded-xl px-3.5 py-2.5 border border-border/50">
+                  <span className="text-xs text-muted-foreground">Грейд</span>
+                  <Select value={grade} onValueChange={setGrade}>
+                    <SelectTrigger className="ml-auto w-28 h-7 text-xs bg-background/80 border-border/60 rounded-lg"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Junior">Junior</SelectItem>
+                      <SelectItem value="Middle">Middle</SelectItem>
+                      <SelectItem value="Senior">Senior</SelectItem>
+                      <SelectItem value="Lead">Lead</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Photos row */}
+              <div className="flex gap-4">
+                {/* Employee photo */}
+                <div className="flex flex-col items-center flex-1">
+                  <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Фото</span>
+                  {emp.photoUrl ? (
+                    <img src={emp.photoUrl} alt="Фото" className="w-full aspect-square max-w-[160px] object-cover rounded-2xl border-2 border-border shadow-md mb-2" />
+                  ) : (
+                    <div className="w-full aspect-square max-w-[160px] rounded-2xl border-2 border-dashed border-border bg-gradient-to-br from-muted/40 to-muted/10 flex items-center justify-center mb-2 shadow-inner">
+                      <User className="w-14 h-14 text-muted-foreground/20" />
+                    </div>
+                  )}
+                  <p className="text-[10px] text-muted-foreground mb-2">
+                    {emp.photoUrl ? "✓ Фото загружено" : "Фото отсутствует"}
+                  </p>
+                  <label className="cursor-pointer inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors bg-primary/5 hover:bg-primary/10 px-3 py-1.5 rounded-lg border border-primary/20">
                     <Upload className="w-3 h-3" />
                     Загрузить
-                  </Button>
+                    <input type="file" accept=".jpg,.jpeg,.png,.webp" className="hidden" />
+                  </label>
                 </div>
-              </div>
 
-              {/* Тип сотрудника */}
-              <div className="flex flex-col items-center">
-                <h3 className="text-sm font-semibold text-foreground mb-2 text-center leading-tight">Актуальный тип сотрудника<br /><span className="text-[11px] font-normal text-muted-foreground">по результатам последнего опроса</span></h3>
-                <Select value={employeeType} onValueChange={setEmployeeType}>
-                  <SelectTrigger className="w-56 h-8 text-xs bg-background/70 mb-2"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Процессный исполнитель">Процессный исполнитель</SelectItem>
-                    <SelectItem value="Надежный гибкий исполнитель">Надежный гибкий исполнитель</SelectItem>
-                    <SelectItem value="Творческий исследователь">Творческий исследователь</SelectItem>
-                    <SelectItem value="Автономный результатник">Автономный результатник</SelectItem>
-                    <SelectItem value="Адаптивный координатор">Адаптивный координатор</SelectItem>
-                    <SelectItem value="Сбалансированный исполнитель">Сбалансированный исполнитель</SelectItem>
-                    <SelectItem value="Нужен контур управления">Нужен контур управления</SelectItem>
-                  </SelectContent>
-                </Select>
-                <div className="w-36 h-36 rounded-xl border border-dashed border-border bg-muted/30 flex items-center justify-center mb-2">
-                  <User className="w-12 h-12 text-muted-foreground/20" />
+                {/* Employee type */}
+                <div className="flex flex-col items-center flex-1">
+                  <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 text-center">Тип сотрудника</span>
+                  <span className="text-[10px] text-muted-foreground/70 mb-2">по результатам опроса</span>
+                  <Select value={employeeType} onValueChange={setEmployeeType}>
+                    <SelectTrigger className="w-full max-w-[200px] h-8 text-xs bg-background/80 border-border/60 rounded-lg mb-2"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Процессный исполнитель">Процессный исполнитель</SelectItem>
+                      <SelectItem value="Надежный гибкий исполнитель">Надежный гибкий исполнитель</SelectItem>
+                      <SelectItem value="Творческий исследователь">Творческий исследователь</SelectItem>
+                      <SelectItem value="Автономный результатник">Автономный результатник</SelectItem>
+                      <SelectItem value="Адаптивный координатор">Адаптивный координатор</SelectItem>
+                      <SelectItem value="Сбалансированный исполнитель">Сбалансированный исполнитель</SelectItem>
+                      <SelectItem value="Нужен контур управления">Нужен контур управления</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="w-full aspect-square max-w-[130px] rounded-2xl border-2 border-dashed border-border bg-gradient-to-br from-muted/30 to-transparent flex items-center justify-center mb-2">
+                    <User className="w-10 h-10 text-muted-foreground/15" />
+                  </div>
+                  <textarea
+                    placeholder="Описание типа..."
+                    rows={2}
+                    className="w-full text-xs rounded-xl border border-border/60 bg-background/60 px-3 py-2 text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-1 focus:ring-primary/40"
+                  />
                 </div>
-                <textarea
-                  placeholder="Описание типа сотрудника..."
-                  rows={3}
-                  className="w-full max-w-[220px] text-xs rounded-lg border border-border bg-background/70 px-2.5 py-1.5 text-foreground placeholder:text-muted-foreground/60 resize-none focus:outline-none focus:ring-1 focus:ring-primary/40"
-                />
               </div>
             </div>
           </div>
