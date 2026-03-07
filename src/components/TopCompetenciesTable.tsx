@@ -16,8 +16,16 @@ const taskTypes = [
   "Тестирование", "Обучение", "Документация",
 ];
 
-const generateCompetencyData = (days: number) => {
-  const seed = days * 7;
+const departments = [
+  { key: "all", label: "Все отделы" },
+  { key: "analytics", label: "Аналитика" },
+  { key: "consulting", label: "Консалтинг" },
+  { key: "dev", label: "Разработка" },
+] as const;
+
+const generateCompetencyData = (days: number, deptKey: string) => {
+  const deptSeed = deptKey.charCodeAt(0) * 11 + deptKey.length * 7;
+  const seed = days * 7 + deptSeed;
   return taskTypes.map((name, i) => ({
     name,
     count: Math.floor(((seed + i * 17) % 50) + 5 + ((seed + i * 137 + 97) * 2654435761 >>> 0) % 20),
@@ -25,13 +33,14 @@ const generateCompetencyData = (days: number) => {
 };
 
 const TopCompetenciesTable = () => {
+  const [activeDept, setActiveDept] = useState<string>("all");
   const [dateFrom, setDateFrom] = useState<Date>(() => {
     const d = new Date(); d.setDate(d.getDate() - 30); return d;
   });
   const [dateTo, setDateTo] = useState<Date>(new Date());
 
   const days = Math.max(differenceInDays(dateTo, dateFrom), 1);
-  const data = useMemo(() => generateCompetencyData(days), [days]);
+  const data = useMemo(() => generateCompetencyData(days, activeDept), [days, activeDept]);
   const total = data.reduce((s, d) => s + d.count, 0);
 
   return (
@@ -40,6 +49,23 @@ const TopCompetenciesTable = () => {
         Востребованные компетенции
       </h2>
       <p className="text-xs text-muted-foreground mb-3">Типы задач за выбранный период</p>
+
+      {/* Department selector */}
+      <div className="flex items-center gap-1 sm:gap-1.5 bg-muted/60 rounded-xl p-1 self-start overflow-x-auto mb-3">
+        {departments.map((d) => (
+          <button
+            key={d.key}
+            onClick={() => setActiveDept(d.key)}
+            className={`px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 whitespace-nowrap ${
+              activeDept === d.key
+                ? "bg-primary text-primary-foreground shadow-[0_2px_8px_rgba(15,118,110,0.3)]"
+                : "text-muted-foreground hover:text-card-foreground hover:bg-card/80"
+            }`}
+          >
+            {d.label}
+          </button>
+        ))}
+      </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <Popover>
