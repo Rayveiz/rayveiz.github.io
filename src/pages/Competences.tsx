@@ -249,14 +249,15 @@ const Competences = () => {
 
   const handleRemoveDept = (deptId: string) => {
     const dept = departments.find(d => d.id === deptId);
-    const empsInDept = employees.filter(e => e.department === deptId);
-    if (empsInDept.length > 0) {
-      toast({ title: "Ошибка", description: `В отделе «${dept?.name}» есть сотрудники. Сначала удалите или переместите их.`, variant: "destructive" });
-      return;
-    }
+    // Clear department from employees that belong to it
+    setEmployees(prev => prev.map(e => e.department === deptId ? { ...e, department: "" } : e));
     setDepartments(prev => prev.filter(d => d.id !== deptId));
     if (selectedDept === deptId) setSelectedDept("all");
     toast({ title: "Удалено", description: `Отдел «${dept?.name}» удалён` });
+  };
+
+  const handleChangeEmployeeDept = (empId: number, deptId: string) => {
+    setEmployees(prev => prev.map(e => e.id === empId ? { ...e, department: deptId } : e));
   };
 
   return (
@@ -306,7 +307,7 @@ const Competences = () => {
             <div className="flex flex-wrap gap-2">
               <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setShowAddDept(true)}>
                 <Building2 className="w-4 h-4" />
-                Отдел
+                Добавить отдел
               </Button>
               <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setShowAddEmployee(true)}>
                 <UserPlus className="w-4 h-4" />
@@ -392,9 +393,7 @@ const Competences = () => {
                     <TableHead className="font-bold text-foreground sticky left-0 bg-muted/90 z-10 min-w-[120px] sm:min-w-[140px] text-xs sm:text-sm">ФИО</TableHead>
                     <TableHead className="font-bold text-foreground w-14 sm:w-16 text-center text-xs sm:text-sm">ID</TableHead>
                     <TableHead className="font-bold text-foreground min-w-[100px] sm:min-w-[160px] text-xs sm:text-sm">Должность</TableHead>
-                    {selectedDept === "all" && (
-                      <TableHead className="font-bold text-foreground min-w-[80px] text-xs sm:text-sm">Отдел</TableHead>
-                    )}
+                    <TableHead className="font-bold text-foreground min-w-[90px] text-xs sm:text-sm">Отдел</TableHead>
                     {skills.map(s => (
                       <TableHead key={s} className="font-bold text-foreground text-center min-w-[50px] sm:min-w-[60px] text-[10px] sm:text-xs relative group">
                         <div className="flex flex-col items-center gap-0.5">
@@ -429,11 +428,19 @@ const Competences = () => {
                         </TableCell>
                         <TableCell className="font-mono text-muted-foreground text-center text-xs sm:text-sm">{emp.id}</TableCell>
                         <TableCell className="text-muted-foreground text-xs sm:text-sm">{emp.position}</TableCell>
-                        {selectedDept === "all" && (
-                          <TableCell className="text-muted-foreground text-xs sm:text-sm">
-                            {departments.find(d => d.id === emp.department)?.name || "—"}
-                          </TableCell>
-                        )}
+                        <TableCell className="text-muted-foreground text-xs sm:text-sm p-1">
+                          <Select value={emp.department || "__none__"} onValueChange={(v) => handleChangeEmployeeDept(emp.id, v === "__none__" ? "" : v)}>
+                            <SelectTrigger className="h-7 text-xs min-w-[90px]">
+                              <SelectValue placeholder="—" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="__none__">—</SelectItem>
+                              {departments.map(d => (
+                                <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
                         {skills.map(s => (
                           <TableCell key={s} className="text-center p-1">
                             <input
