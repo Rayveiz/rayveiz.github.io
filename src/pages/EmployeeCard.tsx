@@ -120,6 +120,7 @@ const EmployeeCard = () => {
   const [statusFilter, setStatusFilter] = useState("all");
 
   const [employeeType, setEmployeeType] = useState("Процессный исполнитель");
+  const [gender, setGender] = useState<"male" | "female">("male");
   const [compScores, setCompScores] = useState<Record<string, number>>(() => {
     const scores: Record<string, number> = {};
     [...configSkills, ...crmSkills].forEach(s => { scores[s] = Math.floor(Math.random() * 4); });
