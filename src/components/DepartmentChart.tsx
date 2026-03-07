@@ -12,16 +12,22 @@ const periods = [
   { key: "quarter", label: "Квартал", days: 90 },
 ] as const;
 
-const generateData = (days: number) => {
+const departments = [
+  { key: "analytics", label: "Аналитика" },
+  { key: "consulting", label: "Консалтинг" },
+  { key: "dev", label: "Разработка" },
+] as const;
+
+const generateData = (days: number, deptKey: string) => {
   const data = [];
   const now = new Date();
-  // Use a simple seed based on the day to avoid re-randomizing on every render
   const seed = now.getFullYear() * 1000 + now.getMonth() * 31 + now.getDate();
+  // Different multiplier per department for variety
+  const deptSeed = deptKey.charCodeAt(0) * 7 + deptKey.length * 13;
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(now);
     date.setDate(date.getDate() - i);
-    // Deterministic pseudo-random based on seed + index
-    const pseudo = ((seed + i * 137 + 97) * 2654435761) >>> 0;
+    const pseudo = ((seed + deptSeed + i * 137 + 97) * 2654435761) >>> 0;
     const hours = (pseudo % 35) + 20;
     data.push({
       date: `${date.getDate().toString().padStart(2, "0")}.${(date.getMonth() + 1).toString().padStart(2, "0")}`,
@@ -48,9 +54,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 const DepartmentChart = () => {
   const isMobile = useIsMobile();
   const [activePeriod, setActivePeriod] = useState<string>("2weeks");
+  const [activeDept, setActiveDept] = useState<string>("analytics");
 
   const selectedPeriod = periods.find((p) => p.key === activePeriod)!;
-  const data = useMemo(() => generateData(selectedPeriod.days), [selectedPeriod.days]);
+  const selectedDept = departments.find((d) => d.key === activeDept)!;
+  const data = useMemo(() => generateData(selectedPeriod.days, activeDept), [selectedPeriod.days, activeDept]);
 
   const avgHours = Math.round(data.reduce((s, d) => s + d.hours, 0) / data.length);
   const maxHours = Math.max(...data.map((d) => d.hours));
@@ -61,12 +69,31 @@ const DepartmentChart = () => {
         <div>
           <h2 className="text-lg sm:text-xl font-bold text-card-foreground flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            Загрузка отдела аналитики
+            Загрузка отдела: {selectedDept.label}
           </h2>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             Закрытые часы · Среднее: <span className="font-semibold text-card-foreground">{avgHours}ч</span> · Макс: <span className="font-semibold text-card-foreground">{maxHours}ч</span>
           </p>
         </div>
+
+        {/* Department selector */}
+        <div className="flex items-center gap-1 sm:gap-1.5 bg-muted/60 rounded-xl p-1 self-start overflow-x-auto">
+          {departments.map((d) => (
+            <button
+              key={d.key}
+              onClick={() => setActiveDept(d.key)}
+              className={`px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 whitespace-nowrap ${
+                activeDept === d.key
+                  ? "bg-primary text-primary-foreground shadow-[0_2px_8px_rgba(15,118,110,0.3)]"
+                  : "text-muted-foreground hover:text-card-foreground hover:bg-card/80"
+              }`}
+            >
+              {d.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Period selector */}
         <div className="flex items-center gap-1 sm:gap-1.5 bg-muted/60 rounded-xl p-1 self-start overflow-x-auto">
           <CalendarDays className="w-4 h-4 text-muted-foreground ml-1.5 sm:ml-2 shrink-0" />
           {periods.map((p) => (
