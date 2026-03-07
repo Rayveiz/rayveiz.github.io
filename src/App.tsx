@@ -10,6 +10,7 @@ import Absences from "./pages/Absences";
 import Competences from "./pages/Competences";
 import Admins from "./pages/Admins";
 import Reports from "./pages/Reports";
+import Grades from "./pages/Grades";
 import EmployeeCard from "./pages/EmployeeCard";
 import NotFound from "./pages/NotFound";
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/employees/:id/card" element={<EmployeeCard />} />
           <Route path="/absences" element={<Absences />} />
           <Route path="/competences" element={<Competences />} />
+          <Route path="/grades" element={<Grades />} />
           <Route path="/admins" element={<Admins />} />
           <Route path="/stats" element={<Stats />} />
           <Route path="/reports" element={<Reports />} />
